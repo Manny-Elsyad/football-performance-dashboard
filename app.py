@@ -93,6 +93,30 @@ def build_winger_scoring(df: pd.DataFrame) -> pd.DataFrame:
     return scored_df
 
 
+def build_similarity_search(df: pd.DataFrame, player_name: str) -> list[dict]:
+    """Return the five most similar players based on scouting metrics."""
+    scored_df = build_winger_scoring(df)
+    if player_name not in scored_df["Player"].values:
+        return []
+
+    target = scored_df[scored_df["Player"] == player_name].iloc[0]
+    similarity_columns = [
+        "GoalsPer90",
+        "AssistsPer90",
+        "GoalContributionsPer90",
+        "SuccessfulDribblesPer90",
+        "KeyPassesPer90",
+        "xGPer90",
+        "xAPer90",
+    ]
+    base = scored_df[scored_df["Player"] != player_name].copy()
+    base_numeric = base[similarity_columns].apply(pd.to_numeric, errors="coerce").fillna(0)
+    target_numeric = pd.Series(target[similarity_columns]).apply(pd.to_numeric, errors="coerce").fillna(0)
+    base["SimilarityScore"] = ((base_numeric - target_numeric).pow(2).sum(axis=1) ** 0.5).round(2)
+    ranked = base.sort_values("SimilarityScore").head(5)
+    return ranked[["Player", "Team", "Position", "WingerScoutingScore", "SimilarityScore"]].to_dict("records")
+
+
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
     """Create a scatter chart for goals versus assists by player."""
     return px.scatter(
@@ -282,6 +306,12 @@ def main() -> None:
             st.plotly_chart(radar_fig, use_container_width=True)
         with scatter_col:
             st.plotly_chart(scatter_fig, use_container_width=True)
+
+    st.subheader("Similarity Search")
+    similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
+    similar_players = build_similarity_search(filtered_df, similarity_player)
+    if similar_players:
+        st.dataframe(pd.DataFrame(similar_players), use_container_width=True)
 
     st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
 

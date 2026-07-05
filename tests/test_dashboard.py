@@ -10,6 +10,7 @@ from app import (
     build_advanced_metrics,
     build_kpi_summary,
     build_player_comparison_charts,
+    build_similarity_search,
     build_winger_scoring,
     filter_players,
     load_data,
@@ -101,3 +102,10 @@ def test_build_player_comparison_charts_returns_expected_objects():
     charts = build_player_comparison_charts(df, ["Lamine Yamal", "Vinicius Junior"])
     assert len(charts) == 2
     assert all(chart is not None for chart in charts)
+
+
+def test_build_similarity_search_returns_five_players():
+    df = load_data()
+    similar = build_similarity_search(df, "Lamine Yamal")
+    assert len(similar) == 5
+    assert all("Player" in row for row in similar)
