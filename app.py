@@ -339,17 +339,41 @@ def main() -> None:
 
     kpis = build_kpi_summary(filtered_df)
 
-    st.subheader("Key Scouting KPIs")
+    st.subheader("Scouting Platform Overview")
     metric_cols = st.columns(5)
     metric_labels = [
-        ("Goals", kpis["Goals"]),
-        ("Assists", kpis["Assists"]),
-        ("Goals/90", kpis["GoalsPer90"]),
-        ("Assists/90", kpis["AssistsPer90"]),
-        ("Goal Contributions/90", kpis["GoalContributionsPer90"]),
+        ("Total Players", len(filtered_df)),
+        ("Total Clubs", len(filtered_df["Team"].unique())),
+        ("Total Leagues", len(filtered_df["League"].unique()) if "League" in filtered_df.columns else 0),
+        ("Average Winger Score", round(filtered_df["WingerScoutingScore"].mean(), 1) if "WingerScoutingScore" in filtered_df.columns else 0),
+        ("Highest Rated Player", filtered_df.sort_values("WingerScoutingScore", ascending=False)["Player"].iloc[0] if not filtered_df.empty else "N/A"),
     ]
     for col, (label, value) in zip(metric_cols, metric_labels):
         col.metric(label, value)
+
+    st.subheader("Player Profile")
+    profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
+    profile = build_player_profile(filtered_df, profile_player)
+    if profile:
+        profile_cols = st.columns(2)
+        with profile_cols[0]:
+            st.markdown(f"### {profile['Player']}")
+            st.write(f"Club: **{profile['Team']}**")
+            st.write(f"Position: **{profile['Position']}**")
+            st.write(f"Minutes: **{profile['Minutes']}**")
+            st.write(f"Goals: **{profile['Goals']}**")
+            st.write(f"Assists: **{profile['Assists']}**")
+            st.write(f"xG: **{profile['xG']}**")
+            st.write(f"xA: **{profile['xA']}**")
+        with profile_cols[1]:
+            st.write(f"Progressive Carries: **{profile['ProgressiveCarries']}**")
+            st.write(f"Successful Dribbles: **{profile['SuccessfulDribbles']}**")
+            st.write(f"Key Passes: **{profile['KeyPasses']}**")
+            st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
+            st.write("Strengths")
+            st.write("- " + "\n- ".join(profile["Strengths"]))
+            st.write("Weaknesses")
+            st.write("- " + "\n- ".join(profile["Weaknesses"]))
 
     st.subheader("Player Comparison")
     comparison_players = st.multiselect(
