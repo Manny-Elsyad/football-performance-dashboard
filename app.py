@@ -136,8 +136,12 @@ def build_player_profile(df: pd.DataFrame, player_name: str) -> dict:
     row = player_row.iloc[0]
     strengths = []
     weaknesses = []
+    recommendation = "Monitor closely"
+    fit = "Developing profile"
     if row.get("GoalsPer90", 0) >= 0.8:
         strengths.append("High goal threat")
+        recommendation = "Strong attacking prospect"
+        fit = "High-value profile for wide attacking roles"
     else:
         weaknesses.append("Goal output needs growth")
     if row.get("AssistsPer90", 0) >= 0.7:
@@ -155,18 +159,25 @@ def build_player_profile(df: pd.DataFrame, player_name: str) -> dict:
     return {
         "Player": row["Player"],
         "Team": row.get("Team", "Unknown"),
+        "League": row.get("League", "Unknown"),
         "Position": row.get("Position", "Unknown"),
         "Minutes": int(row.get("MinutesPlayed", 0)),
         "Goals": int(row.get("Goals", 0)),
         "Assists": int(row.get("Assists", 0)),
         "xG": round(float(row.get("xG", 0)), 2),
         "xA": round(float(row.get("xA", 0)), 2),
+        "GoalsPer90": round(float(row.get("GoalsPer90", 0)), 2),
+        "AssistsPer90": round(float(row.get("AssistsPer90", 0)), 2),
+        "xGPer90": round(float(row.get("xGPer90", 0)), 2),
+        "xAPer90": round(float(row.get("xAPer90", 0)), 2),
         "ProgressiveCarries": round(float(row.get("ProgressiveCarries", 0)), 2),
         "SuccessfulDribbles": round(float(row.get("SuccessfulDribbles", 0)), 2),
         "KeyPasses": round(float(row.get("KeyPasses", 0)), 2),
         "WingerScoutingScore": round(float(row.get("WingerScoutingScore", 0)), 2),
         "Strengths": strengths,
         "Weaknesses": weaknesses,
+        "Recommendation": recommendation,
+        "Fit": fit,
     }
 
 
@@ -383,120 +394,139 @@ def main() -> None:
 
     kpis = build_kpi_summary(filtered_df)
 
-    st.subheader("Scouting Platform Overview")
-    metric_cols = st.columns(5)
-    metric_labels = [
-        ("Total Players", len(filtered_df)),
-        ("Total Clubs", len(filtered_df["Team"].unique())),
-        ("Total Leagues", len(filtered_df["League"].unique()) if "League" in filtered_df.columns else 0),
-        ("Average Winger Score", round(filtered_df["WingerScoutingScore"].mean(), 1) if "WingerScoutingScore" in filtered_df.columns else 0),
-        ("Highest Rated Player", filtered_df.sort_values("WingerScoutingScore", ascending=False)["Player"].iloc[0] if not filtered_df.empty else "N/A"),
-    ]
-    for col, (label, value) in zip(metric_cols, metric_labels):
-        col.metric(label, value)
-
-    st.subheader("Player Profile")
-    profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
-    profile = build_player_profile(filtered_df, profile_player)
-    similar_players = build_similarity_search(filtered_df, profile_player) if profile else []
-    if profile:
-        profile_cols = st.columns(2)
-        with profile_cols[0]:
-            st.markdown(f"### {profile['Player']}")
-            st.write(f"Club: **{profile['Team']}**")
-            st.write(f"Position: **{profile['Position']}**")
-            st.write(f"Minutes: **{profile['Minutes']}**")
-            st.write(f"Goals: **{profile['Goals']}**")
-            st.write(f"Assists: **{profile['Assists']}**")
-            st.write(f"xG: **{profile['xG']}**")
-            st.write(f"xA: **{profile['xA']}**")
-        with profile_cols[1]:
-            st.write(f"Progressive Carries: **{profile['ProgressiveCarries']}**")
-            st.write(f"Successful Dribbles: **{profile['SuccessfulDribbles']}**")
-            st.write(f"Key Passes: **{profile['KeyPasses']}**")
-            st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
-            st.write("Strengths")
-            st.write("- " + "\n- ".join(profile["Strengths"]))
-            st.write("Weaknesses")
-            st.write("- " + "\n- ".join(profile["Weaknesses"]))
-
-        report_bytes = build_scouting_report(profile, similar_players)
-        st.download_button(
-            label="Download scouting report",
-            data=report_bytes,
-            file_name=f"{profile['Player'].replace(' ', '_')}_scouting_report.txt",
-            mime="text/plain",
-        )
-
-    st.subheader("Player Comparison")
-    comparison_players = st.multiselect(
-        "Select players to compare",
-        options=sorted(filtered_df["Player"].tolist()),
-        default=filtered_df["Player"].head(3).tolist(),
+    dashboard_tab, profile_tab, compare_tab, similarity_tab, reports_tab = st.tabs(
+        ["Dashboard", "Player Profile", "Compare Players", "Similarity Search", "Scouting Reports"]
     )
 
-    if comparison_players:
-        compare_df = filtered_df[filtered_df["Player"].isin(comparison_players)]
-        compare_df = compare_df[[
-            "Player",
-            "Team",
-            "Position",
-            "Goals",
-            "Assists",
-            "MinutesPlayed",
-            "WingerScoutingScore",
-            "GoalsPer90",
-            "AssistsPer90",
-            "GoalContributionsPer90",
-            "ProgressiveCarriesPer90",
-            "SuccessfulDribblesPer90",
-            "KeyPassesPer90",
-            "xGPer90",
-            "xAPer90",
-        ]]
-        st.dataframe(compare_df, use_container_width=True)
+    with dashboard_tab:
+        st.subheader("Scouting Platform Overview")
+        metric_cols = st.columns(5)
+        metric_labels = [
+            ("Total Players", len(filtered_df)),
+            ("Total Clubs", len(filtered_df["Team"].unique())),
+            ("Total Leagues", len(filtered_df["League"].unique()) if "League" in filtered_df.columns else 0),
+            ("Average Winger Score", round(filtered_df["WingerScoutingScore"].mean(), 1) if "WingerScoutingScore" in filtered_df.columns else 0),
+            ("Highest Rated Player", filtered_df.sort_values("WingerScoutingScore", ascending=False)["Player"].iloc[0] if not filtered_df.empty else "N/A"),
+        ]
+        for col, (label, value) in zip(metric_cols, metric_labels):
+            col.metric(label, value)
 
-    st.subheader("Analytics Charts")
-    chart_col1, chart_col2 = st.columns(2)
-    with chart_col1:
-        st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True)
-    with chart_col2:
-        st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True)
+        chart_col1, chart_col2 = st.columns(2)
+        with chart_col1:
+            st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True)
+        with chart_col2:
+            st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True)
 
-    st.subheader("Player Comparison Tools")
-    comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
-    comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
-    if comparison_two and comparison_two_b:
-        radar_fig, scatter_fig = build_player_comparison_charts(
-            filtered_df,
-            [comparison_two, comparison_two_b],
-        )
-        radar_col, scatter_col = st.columns(2)
-        with radar_col:
-            st.plotly_chart(radar_fig, use_container_width=True)
-        with scatter_col:
-            st.plotly_chart(scatter_fig, use_container_width=True)
+        st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
 
-    st.subheader("Similarity Search")
-    similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
-    similar_players = build_similarity_search(filtered_df, similarity_player)
-    if similar_players:
-        similarity_df = pd.DataFrame(similar_players)
-        st.dataframe(similarity_df, use_container_width=True)
-        st.plotly_chart(
-            px.bar(
-                similarity_df.sort_values("SimilarityPercent", ascending=False),
-                x="SimilarityPercent",
-                y="Player",
-                orientation="h",
-                color="Player",
-                title=f"Similarity to {similarity_player}",
-                template="plotly_white",
-            ),
-            use_container_width=True,
+    with profile_tab:
+        st.subheader("Player Profile")
+        profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
+        profile = build_player_profile(filtered_df, profile_player)
+        if profile:
+            profile_cols = st.columns(2)
+            with profile_cols[0]:
+                st.markdown(f"### {profile['Player']}")
+                st.write(f"Club: **{profile['Team']}**")
+                st.write(f"League: **{profile.get('League', 'Unknown')}**")
+                st.write(f"Position: **{profile['Position']}**")
+                st.write(f"Minutes: **{profile['Minutes']}**")
+                st.write(f"Goals: **{profile['Goals']}**")
+                st.write(f"Assists: **{profile['Assists']}**")
+                st.write(f"xG: **{profile['xG']}**")
+                st.write(f"xA: **{profile['xA']}**")
+            with profile_cols[1]:
+                st.write(f"Progressive Carries: **{profile['ProgressiveCarries']}**")
+                st.write(f"Successful Dribbles: **{profile['SuccessfulDribbles']}**")
+                st.write(f"Key Passes: **{profile['KeyPasses']}**")
+                st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
+                st.write("Strengths")
+                st.write("- " + "\n- ".join(profile["Strengths"]))
+                st.write("Weaknesses")
+                st.write("- " + "\n- ".join(profile["Weaknesses"]))
+
+    with compare_tab:
+        st.subheader("Player Comparison")
+        comparison_players = st.multiselect(
+            "Select players to compare",
+            options=sorted(filtered_df["Player"].tolist()),
+            default=filtered_df["Player"].head(3).tolist(),
         )
 
-    st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
+        if comparison_players:
+            compare_df = filtered_df[filtered_df["Player"].isin(comparison_players)]
+            compare_df = compare_df[[
+                "Player",
+                "Team",
+                "Position",
+                "Goals",
+                "Assists",
+                "MinutesPlayed",
+                "WingerScoutingScore",
+                "GoalsPer90",
+                "AssistsPer90",
+                "GoalContributionsPer90",
+                "ProgressiveCarriesPer90",
+                "SuccessfulDribblesPer90",
+                "KeyPassesPer90",
+                "xGPer90",
+                "xAPer90",
+            ]]
+            st.dataframe(compare_df, use_container_width=True)
+
+        st.subheader("Player Comparison Tools")
+        comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
+        comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
+        if comparison_two and comparison_two_b:
+            radar_fig, scatter_fig = build_player_comparison_charts(
+                filtered_df,
+                [comparison_two, comparison_two_b],
+            )
+            radar_col, scatter_col = st.columns(2)
+            with radar_col:
+                st.plotly_chart(radar_fig, use_container_width=True)
+            with scatter_col:
+                st.plotly_chart(scatter_fig, use_container_width=True)
+
+    with similarity_tab:
+        st.subheader("Similarity Search")
+        similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
+        similar_players = build_similarity_search(filtered_df, similarity_player)
+        if similar_players:
+            similarity_df = pd.DataFrame(similar_players)
+            st.caption("Similarity is based on per-90 goal threat, creation, dribbling, and chance creation metrics.")
+            st.dataframe(similarity_df, use_container_width=True)
+            st.plotly_chart(
+                px.bar(
+                    similarity_df.sort_values("SimilarityPercent", ascending=False),
+                    x="SimilarityPercent",
+                    y="Player",
+                    orientation="h",
+                    color="Player",
+                    title=f"Similarity to {similarity_player}",
+                    template="plotly_white",
+                ),
+                use_container_width=True,
+            )
+
+    with reports_tab:
+        st.subheader("Scouting Reports")
+        report_player = st.selectbox("Select a player for a written report", options=sorted(filtered_df["Player"].tolist()), index=0)
+        report_profile = build_player_profile(filtered_df, report_player)
+        report_similarities = build_similarity_search(filtered_df, report_player) if report_profile else []
+        if st.button("Generate scouting report") and report_profile:
+            st.session_state["generated_report"] = build_scouting_report(report_profile, report_similarities)
+            st.session_state["generated_report_name"] = f"{report_profile['Player'].replace(' ', '_')}_scouting_report.txt"
+        if report_profile and st.session_state.get("generated_report"):
+            st.download_button(
+                label="Download scouting report",
+                data=st.session_state["generated_report"],
+                file_name=st.session_state.get("generated_report_name", "scouting_report.txt"),
+                mime="text/plain",
+            )
+            st.text_area("Generated report", st.session_state["generated_report"].decode("utf-8"), height=300)
+        elif report_profile:
+            st.info("Generate a written scouting report for the selected player to review and download it.")
 
 
 if __name__ == "__main__":

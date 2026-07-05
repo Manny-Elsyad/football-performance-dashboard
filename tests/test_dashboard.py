@@ -129,6 +129,13 @@ def test_build_player_profile_returns_expected_keys():
     assert "Weaknesses" in profile
 
 
+def test_build_player_profile_includes_recommendation_fields():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    assert "Recommendation" in profile
+    assert "Fit" in profile
+
+
 def test_build_scouting_report_returns_bytes():
     df = load_data()
     profile = build_player_profile(df, "Lamine Yamal")
