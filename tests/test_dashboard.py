@@ -5,7 +5,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app import DATA_PATH, filter_players, load_data
+from app import DATA_PATH, build_kpi_summary, filter_players, load_data
 
 
 def test_data_file_exists():
@@ -48,3 +48,17 @@ def test_filter_players_applies_filters():
     assert filtered["Team"].eq("FC Barcelona").all()
     assert (filtered["MinutesPlayed"] >= 1500).all()
     assert (filtered["Goals"] >= 5).all()
+
+
+def test_build_kpi_summary_returns_expected_metrics():
+    df = load_data()
+    summary = build_kpi_summary(df)
+    assert set(summary.keys()) == {
+        "Goals",
+        "Assists",
+        "GoalsPer90",
+        "AssistsPer90",
+        "GoalContributionsPer90",
+    }
+    assert summary["Goals"] >= 0
+    assert summary["Assists"] >= 0

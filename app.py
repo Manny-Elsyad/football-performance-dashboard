@@ -11,6 +11,9 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+
+st.set_page_config(page_title="Football Scouting Dashboard", page_icon="⚽", layout="wide")
+
 DATA_PATH = Path(__file__).parent / "data" / "players.csv"
 
 
@@ -39,6 +42,23 @@ def filter_players(
     filtered = filtered[filtered["MinutesPlayed"] >= min_minutes]
     filtered = filtered[filtered["Goals"] >= min_goals]
     return filtered.reset_index(drop=True)
+
+
+def build_kpi_summary(df: pd.DataFrame) -> dict:
+    """Return a compact summary of the most important scouting KPIs."""
+    minutes = max(df["MinutesPlayed"].sum(), 1)
+    goals = int(df["Goals"].sum())
+    assists = int(df["Assists"].sum())
+    goals_per_90 = round(goals / minutes * 90, 2)
+    assists_per_90 = round(assists / minutes * 90, 2)
+    goal_contribs_per_90 = round((goals + assists) / minutes * 90, 2)
+    return {
+        "Goals": goals,
+        "Assists": assists,
+        "GoalsPer90": goals_per_90,
+        "AssistsPer90": assists_per_90,
+        "GoalContributionsPer90": goal_contribs_per_90,
+    }
 
 
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
@@ -90,14 +110,24 @@ def build_position_distribution(df: pd.DataFrame) -> px.pie:
 
 def main() -> None:
     """Render the Streamlit dashboard."""
-    st.set_page_config(page_title="Football Performance Dashboard", page_icon="⚽", layout="wide")
-    st.title("Football Performance Dashboard")
-    st.caption("A professional sports analytics portfolio project built with Python and Streamlit")
+    st.title("Football Scouting & Winger Analytics Dashboard")
+    st.caption("A portfolio-grade view of elite attacking output, comparison analytics, and scouting signals")
+
+    st.markdown(
+        """
+        <style>
+        .block-container {padding-top: 1.5rem; padding-bottom: 2rem;}
+        div[data-testid="stMetric"] {background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.7rem 0.8rem;}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     df = load_data()
 
     with st.sidebar:
-        st.header("Filters")
+        st.header("Scouting Filters")
+        st.caption("Refine the player pool for comparison and recruitment analysis")
         position = st.selectbox("Position", ["All", "Forward", "Midfielder", "Defender"])
         team = st.selectbox("Team", ["All", *sorted(df["Team"].unique())])
         min_minutes = st.slider("Minimum Minutes Played", 0, 3500, 0, step=100)
@@ -114,22 +144,23 @@ def main() -> None:
         min_goals=min_goals,
     )
 
-    st.subheader("Dashboard Overview")
-    st.write(
-        "Explore how players compare across clubs, positions, and key attacking and defensive metrics."
-    )
-
     if filtered_df.empty:
         st.warning("No players match the current filters. Try adjusting the controls.")
         return
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Players Shown", len(filtered_df))
-    with col2:
-        st.metric("Total Goals", int(filtered_df["Goals"].sum()))
-    with col3:
-        st.metric("Average Minutes", round(filtered_df["MinutesPlayed"].mean(), 1))
+    kpis = build_kpi_summary(filtered_df)
+
+    st.subheader("Key Scouting KPIs")
+    metric_cols = st.columns(5)
+    metric_labels = [
+        ("Goals", kpis["Goals"]),
+        ("Assists", kpis["Assists"]),
+        ("Goals/90", kpis["GoalsPer90"]),
+        ("Assists/90", kpis["AssistsPer90"]),
+        ("Goal Contributions/90", kpis["GoalContributionsPer90"]),
+    ]
+    for col, (label, value) in zip(metric_cols, metric_labels):
+        col.metric(label, value)
 
     st.subheader("Player Comparison")
     comparison_players = st.multiselect(
