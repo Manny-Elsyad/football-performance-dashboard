@@ -205,8 +205,15 @@ def build_position_distribution(df: pd.DataFrame) -> px.pie:
 
 def main() -> None:
     """Render the Streamlit dashboard."""
-    st.title("Football Scouting & Winger Analytics Dashboard")
-    st.caption("A portfolio-grade view of elite attacking output, comparison analytics, and scouting signals")
+    st.markdown(
+        """
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); padding: 2rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+            <h1 style="color:white; margin-bottom:0.2rem;">Football Scouting & Winger Analytics Dashboard</h1>
+            <p style="color:#cbd5e1; font-size:1.05rem; margin-top:0.3rem;">A portfolio-grade scouting workspace for evaluating winger profiles, comparing top talents, and uncovering similarity-based recruitment opportunities.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
