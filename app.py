@@ -52,6 +52,11 @@ st.set_page_config(page_title="Football Scouting Dashboard", page_icon="⚽", la
 DATA_PATH = Path(__file__).parent / "data" / "players.csv"
 
 
+def get_tab_labels() -> list[str]:
+    """Return the tab labels used for the scouting platform navigation."""
+    return ["Dashboard", "Player Profile", "Compare Players", "Similarity Search", "Scouting Reports"]
+
+
 @st.cache_data
 def load_data() -> pd.DataFrame:
     """Load and preprocess the football player dataset, preferring a real-world source when available."""

@@ -16,6 +16,7 @@ from app import (
     build_winger_scoring,
     calculate_percentiles,
     filter_players,
+    get_tab_labels,
     load_data,
 )
 
@@ -119,6 +120,16 @@ def test_calculate_percentiles_returns_expected_range():
     percentile_df = calculate_percentiles(df)
     assert "Percentile" in percentile_df.columns
     assert percentile_df["Percentile"].between(0, 100).all()
+
+
+def test_get_tab_labels_returns_expected_tabs():
+    assert get_tab_labels() == [
+        "Dashboard",
+        "Player Profile",
+        "Compare Players",
+        "Similarity Search",
+        "Scouting Reports",
+    ]
 
 
 def test_build_player_profile_returns_expected_keys():
