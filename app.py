@@ -349,8 +349,9 @@ def main() -> None:
     st.markdown(
         """
         <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); padding: 2rem; border-radius: 1rem; margin-bottom: 1.5rem;">
-            <h1 style="color:white; margin-bottom:0.2rem;">Football Scouting & Winger Analytics Dashboard</h1>
-            <p style="color:#cbd5e1; font-size:1.05rem; margin-top:0.3rem;">A portfolio-grade scouting workspace for evaluating winger profiles, comparing top talents, and uncovering similarity-based recruitment opportunities.</p>
+            <h1 style="color:white; margin-bottom:0.2rem;">Football Scouting Platform</h1>
+            <p style="color:#cbd5e1; font-size:1.05rem; margin-top:0.3rem;">Analyze • Compare • Recruit</p>
+            <p style="color:#e2e8f0; margin-top:0.6rem;">A premium scouting workspace for evaluating winger profiles, comparing elite talents, and uncovering recruitment-ready similarity matches.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -361,6 +362,8 @@ def main() -> None:
         <style>
         .block-container {padding-top: 1.5rem; padding-bottom: 2rem;}
         div[data-testid="stMetric"] {background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.7rem 0.8rem;}
+        .stTabs [data-baseweb="tab-list"] {gap: 0.4rem;}
+        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.45rem 0.9rem;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -424,26 +427,40 @@ def main() -> None:
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
         profile = build_player_profile(filtered_df, profile_player)
         if profile:
-            profile_cols = st.columns(2)
+            profile_cols = st.columns([1.2, 0.8])
             with profile_cols[0]:
                 st.markdown(f"### {profile['Player']}")
-                st.write(f"Club: **{profile['Team']}**")
-                st.write(f"League: **{profile.get('League', 'Unknown')}**")
-                st.write(f"Position: **{profile['Position']}**")
+                st.caption(f"{profile['Team']} • {profile.get('League', 'Unknown')} • {profile['Position']}")
                 st.write(f"Minutes: **{profile['Minutes']}**")
                 st.write(f"Goals: **{profile['Goals']}**")
                 st.write(f"Assists: **{profile['Assists']}**")
                 st.write(f"xG: **{profile['xG']}**")
                 st.write(f"xA: **{profile['xA']}**")
+                st.write(f"Goals/90: **{profile['GoalsPer90']}**")
+                st.write(f"Assists/90: **{profile['AssistsPer90']}**")
+                st.write(f"xG/90: **{profile['xGPer90']}**")
+                st.write(f"xA/90: **{profile['xAPer90']}**")
             with profile_cols[1]:
+                st.markdown("### Scouting Summary")
+                st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
+                st.write(f"Recommendation: **{profile['Recommendation']}**")
+                st.write(f"Fit: **{profile['Fit']}**")
                 st.write(f"Progressive Carries: **{profile['ProgressiveCarries']}**")
                 st.write(f"Successful Dribbles: **{profile['SuccessfulDribbles']}**")
                 st.write(f"Key Passes: **{profile['KeyPasses']}**")
-                st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
                 st.write("Strengths")
                 st.write("- " + "\n- ".join(profile["Strengths"]))
                 st.write("Weaknesses")
                 st.write("- " + "\n- ".join(profile["Weaknesses"]))
+
+            metric_items = [
+                ("Goals", profile.get("Goals", 0), 100),
+                ("Assists", profile.get("Assists", 0), 100),
+                ("Winger Score", profile.get("WingerScoutingScore", 0), 100),
+            ]
+            st.markdown("### Key Metric Percentiles")
+            for label, value, max_value in metric_items:
+                st.progress(min(value / max_value, 1.0), text=f"{label}: {value}")
 
     with compare_tab:
         st.subheader("Player Comparison")
