@@ -398,6 +398,7 @@ def main() -> None:
     st.subheader("Player Profile")
     profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
     profile = build_player_profile(filtered_df, profile_player)
+    similar_players = build_similarity_search(filtered_df, profile_player) if profile else []
     if profile:
         profile_cols = st.columns(2)
         with profile_cols[0]:
@@ -419,7 +420,7 @@ def main() -> None:
             st.write("Weaknesses")
             st.write("- " + "\n- ".join(profile["Weaknesses"]))
 
-        report_bytes = build_scouting_report(profile, similar_players if "similar_players" in locals() else [])
+        report_bytes = build_scouting_report(profile, similar_players)
         st.download_button(
             label="Download scouting report",
             data=report_bytes,
