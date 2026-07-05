@@ -68,7 +68,7 @@ def filter_players(
 
 
 def calculate_percentiles(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert scouting metrics to percentile ranks."""
+    """Convert scouting metrics to percentile ranks for both raw and per-90 analysis."""
     percentile_df = df.copy()
     metrics = [
         "Goals",
@@ -79,12 +79,21 @@ def calculate_percentiles(df: pd.DataFrame) -> pd.DataFrame:
         "SuccessfulDribbles",
         "KeyPasses",
         "WingerScoutingScore",
+        "GoalsPer90",
+        "AssistsPer90",
+        "GoalContributionsPer90",
+        "ProgressiveCarriesPer90",
+        "SuccessfulDribblesPer90",
+        "KeyPassesPer90",
+        "xGPer90",
+        "xAPer90",
     ]
     for metric in metrics:
         if metric in percentile_df.columns:
             percentile_df[metric] = pd.to_numeric(percentile_df[metric], errors="coerce")
             percentile_df[metric + "Percentile"] = percentile_df[metric].rank(pct=True) * 100
-    percentile_df["Percentile"] = percentile_df[[col for col in percentile_df.columns if col.endswith("Percentile")]].mean(axis=1).round(1)
+    percentile_columns = [col for col in percentile_df.columns if col.endswith("Percentile")]
+    percentile_df["Percentile"] = percentile_df[percentile_columns].mean(axis=1).round(1) if percentile_columns else 0.0
     return percentile_df
 
 
@@ -200,7 +209,12 @@ def build_similarity_search(df: pd.DataFrame, player_name: str) -> list[dict]:
     target_numeric = pd.Series(target[similarity_columns]).apply(pd.to_numeric, errors="coerce").fillna(0)
     base["SimilarityScore"] = ((base_numeric - target_numeric).pow(2).sum(axis=1) ** 0.5).round(2)
     ranked = base.sort_values("SimilarityScore").head(5)
-    return ranked[["Player", "Team", "Position", "WingerScoutingScore", "SimilarityScore"]].to_dict("records")
+    if not ranked.empty:
+        max_similarity = ranked["SimilarityScore"].max()
+        ranked["SimilarityPercent"] = ((1 - ranked["SimilarityScore"] / max_similarity) * 100).clip(0, 100).round(1)
+    else:
+        ranked["SimilarityPercent"] = pd.Series(dtype=float)
+    return ranked[["Player", "Team", "Position", "WingerScoutingScore", "SimilarityScore", "SimilarityPercent"]].to_dict("records")
 
 
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
@@ -225,15 +239,15 @@ def build_overview_chart(df: pd.DataFrame) -> px.scatter:
 
 
 def build_player_comparison_charts(df: pd.DataFrame, players: list[str]) -> list[go.Figure]:
-    """Create radar and scatter charts for comparing two selected players."""
+    """Create radar and scatter charts for comparing two selected players with percentile-based values."""
     if len(players) < 2:
         return [go.Figure(), go.Figure()]
     comparison_df = df[df["Player"].isin(players)].copy()
     if comparison_df.empty:
         return [go.Figure(), go.Figure()]
 
-    comparison_df = build_winger_scoring(comparison_df)
-    metrics = ["GoalsPer90", "AssistsPer90", "GoalContributionsPer90", "SuccessfulDribblesPer90", "KeyPassesPer90"]
+    comparison_df = calculate_percentiles(build_winger_scoring(comparison_df))
+    metrics = ["GoalsPercentile", "AssistsPercentile", "GoalContributionsPer90Percentile", "SuccessfulDribblesPer90Percentile", "KeyPassesPer90Percentile"]
     radar_df = comparison_df[["Player", *metrics]].copy()
     radar_df = radar_df.set_index("Player")
     radar_df = radar_df.T
@@ -252,12 +266,12 @@ def build_player_comparison_charts(df: pd.DataFrame, players: list[str]) -> list
 
     scatter_fig = px.scatter(
         comparison_df,
-        x="GoalsPer90",
-        y="AssistsPer90",
+        x="GoalsPercentile",
+        y="AssistsPercentile",
         color="Player",
         size="MinutesPlayed",
         hover_name="Player",
-        title="Goals/90 vs Assists/90",
+        title="Percentile Comparison: Goals vs Assists",
         template="plotly_white",
     )
     return [radar_fig, scatter_fig]
@@ -428,7 +442,20 @@ def main() -> None:
     similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
     similar_players = build_similarity_search(filtered_df, similarity_player)
     if similar_players:
-        st.dataframe(pd.DataFrame(similar_players), use_container_width=True)
+        similarity_df = pd.DataFrame(similar_players)
+        st.dataframe(similarity_df, use_container_width=True)
+        st.plotly_chart(
+            px.bar(
+                similarity_df.sort_values("SimilarityPercent", ascending=False),
+                x="SimilarityPercent",
+                y="Player",
+                orientation="h",
+                color="Player",
+                title=f"Similarity to {similarity_player}",
+                template="plotly_white",
+            ),
+            use_container_width=True,
+        )
 
     st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
 
