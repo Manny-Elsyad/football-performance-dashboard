@@ -394,7 +394,7 @@ def main() -> None:
                     <p style="color:#bfdbfe; margin:0; font-size:1.05rem; font-weight:600;">Analyze • Compare • Recruit</p>
                 </div>
                 <div style="background: rgba(15,23,42,0.42); padding:0.8rem 1rem; border-radius:0.8rem; border: 1px solid rgba(148,163,184,0.22); max-width: 34rem;">
-                    <p style="color:#e2e8f0; margin:0; font-size:0.95rem;">Premium scouting software for profiling elite talents, benchmarking player styles, and preparing recruitment-ready recommendations.</p>
+                    <p style="color:#e2e8f0; margin:0; font-size:0.95rem;">A premium scouting workspace for profiling elite talents, benchmarking play styles, and preparing recruitment-ready recommendations.</p>
                 </div>
             </div>
         </div>
@@ -410,12 +410,14 @@ def main() -> None:
         .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.8rem;}
         .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1;}
         .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
+        section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
     st.markdown("### Scouting Workflow")
+    st.caption("Move seamlessly from scouting overview to detailed profiling, comparison, and recruitment recommendations.")
     workflow_cols = st.columns(3)
     workflow_cards = [
         ("Player Profiling", "Assess output, efficiency, and tactical role in a single recruitment view."),
@@ -437,7 +439,7 @@ def main() -> None:
     df = load_data()
 
     with st.sidebar:
-        st.header("Scouting Filters")
+        st.markdown("### Scouting Filters")
         st.caption("Refine the player pool for comparison and recruitment analysis")
         position = st.selectbox("Position", ["All", "Forward", "Midfielder", "Defender"])
         team = st.selectbox("Team", ["All", *sorted(df["Team"].unique())])

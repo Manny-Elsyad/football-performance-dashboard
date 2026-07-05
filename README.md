@@ -2,6 +2,8 @@
 
 A premium football scouting platform built with Python, Streamlit, Pandas, and Plotly. It brings together a polished dashboard experience, player profiling, side-by-side comparison tools, similarity search, and a scouting report generator for recruiter-style analysis.
 
+The interface is designed for Streamlit Cloud deployment while maintaining a premium, analyst-ready presentation.
+
 ## Screenshots
 
 To make the project presentation-ready, add screenshots to an images folder once you have captured them locally.
@@ -20,6 +22,7 @@ This project was designed to feel like a professional scouting workspace rather 
 ## Key Features
 
 - Premium hero section and refined card-based interface
+- Streamlit Cloud-friendly layout with polished spacing and tab presentation
 - Tabbed platform structure for Dashboard, Player Profile, Compare Players, Similarity Search, and Scouting Reports
 - Top KPI cards for goals, assists, and goal contributions per 90
 - Advanced per-90 metrics for winger-style scouting
