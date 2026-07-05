@@ -1,6 +1,6 @@
-# Football Scouting & Winger Analytics Dashboard
+# Football Scouting Platform
 
-A portfolio-quality football scouting dashboard built with Python, Streamlit, Pandas, and Plotly. It showcases how data can be used to evaluate winger-style attacking profiles, compare players, and surface similarity-based scouting insights.
+A premium football scouting platform built with Python, Streamlit, Pandas, and Plotly. It brings together a polished dashboard experience, player profiling, side-by-side comparison tools, similarity search, and a scouting report generator for recruiter-style analysis.
 
 ## Screenshots
 
@@ -15,16 +15,18 @@ Suggested screenshots:
 
 ## Project Overview
 
-This project was designed to feel like a real scouting tool rather than a simple tutorial app. It combines clean UI design, interactive filters, advanced per-90 metrics, and a weighted scouting score to help users explore football performance with a recruitment mindset.
+This project was designed to feel like a professional scouting workspace rather than a simple tutorial app. It combines a premium interface, interactive filters, advanced per-90 metrics, and a weighted scouting score to help users explore football performance with a recruitment mindset.
 
 ## Key Features
 
-- Modern, professional Streamlit interface
+- Premium hero section and refined card-based interface
+- Tabbed platform structure for Dashboard, Player Profile, Compare Players, Similarity Search, and Scouting Reports
 - Top KPI cards for goals, assists, and goal contributions per 90
 - Advanced per-90 metrics for winger-style scouting
 - Weighted Winger Scouting Score
 - Radar and scatter comparison charts for any two players
 - Similarity search that returns the five closest player profiles
+- Scouting report generation with a downloadable analyst-style brief
 - Test coverage and a clean, documented setup
 
 ## Technologies Used
@@ -49,9 +51,9 @@ This project was designed to feel like a real scouting tool rather than a simple
 
 ## Project Structure
 
-- `app.py` – main Streamlit application
+- `app.py` – main Streamlit application with the tabbed scouting platform
 - `data/players.csv` – sample football player dataset
-- `tests/` – automated validation for the dashboard logic
+- `tests/` – automated validation for the dashboard logic and scouting workflows
 
 ## Recruiter-Friendly Notes
 

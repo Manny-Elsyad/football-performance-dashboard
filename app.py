@@ -55,7 +55,7 @@ Comparable Profiles
     return report_text.encode("utf-8")
 
 
-st.set_page_config(page_title="Football Scouting Dashboard", page_icon="⚽", layout="wide")
+st.set_page_config(page_title="Football Scouting Platform", page_icon="⚽", layout="wide")
 
 DATA_PATH = Path(__file__).parent / "data" / "players.csv"
 
@@ -387,10 +387,16 @@ def main() -> None:
     """Render the Streamlit dashboard."""
     st.markdown(
         """
-        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); padding: 2rem; border-radius: 1rem; margin-bottom: 1.5rem;">
-            <h1 style="color:white; margin-bottom:0.2rem;">Football Scouting Platform</h1>
-            <p style="color:#cbd5e1; font-size:1.05rem; margin-top:0.3rem;">Analyze • Compare • Recruit</p>
-            <p style="color:#e2e8f0; margin-top:0.6rem;">A premium scouting workspace for evaluating winger profiles, comparing elite talents, and uncovering recruitment-ready similarity matches.</p>
+        <div style="background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #2563eb 100%); padding: 1.9rem 2rem; border-radius: 1.1rem; margin-bottom: 1.2rem; border: 1px solid rgba(148,163,184,0.28); box-shadow: 0 14px 34px rgba(15,23,42,0.2);">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap: 1rem;">
+                <div>
+                    <h1 style="color:#f8fafc; margin:0 0 0.25rem 0; font-size: 2rem;">Football Scouting Platform</h1>
+                    <p style="color:#bfdbfe; margin:0; font-size:1.05rem; font-weight:600;">Analyze • Compare • Recruit</p>
+                </div>
+                <div style="background: rgba(15,23,42,0.42); padding:0.8rem 1rem; border-radius:0.8rem; border: 1px solid rgba(148,163,184,0.22); max-width: 34rem;">
+                    <p style="color:#e2e8f0; margin:0; font-size:0.95rem;">Premium scouting software for profiling elite talents, benchmarking player styles, and preparing recruitment-ready recommendations.</p>
+                </div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -399,14 +405,34 @@ def main() -> None:
     st.markdown(
         """
         <style>
-        .block-container {padding-top: 1.5rem; padding-bottom: 2rem;}
-        div[data-testid="stMetric"] {background-color: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.7rem 0.8rem;}
-        .stTabs [data-baseweb="tab-list"] {gap: 0.4rem;}
-        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.45rem 0.9rem;}
+        .block-container {padding-top: 1rem; padding-bottom: 2rem;}
+        div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.85rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
+        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.8rem;}
+        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1;}
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
         </style>
         """,
         unsafe_allow_html=True,
     )
+
+    st.markdown("### Scouting Workflow")
+    workflow_cols = st.columns(3)
+    workflow_cards = [
+        ("Player Profiling", "Assess output, efficiency, and tactical role in a single recruitment view."),
+        ("Comparative Analysis", "Benchmark players side by side with percentile-led scouting insight."),
+        ("Recruitment Intelligence", "Surface similar profiles and generate professional scouting reports."),
+    ]
+    for col, (title, body) in zip(workflow_cols, workflow_cards):
+        with col:
+            st.markdown(
+                f"""
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.85rem; padding: 0.95rem 1rem; min-height: 6.5rem;">
+                    <h4 style="margin: 0 0 0.3rem 0; color: #0f172a;">{title}</h4>
+                    <p style="margin: 0; color: #475569;">{body}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     df = load_data()
 
@@ -442,6 +468,7 @@ def main() -> None:
 
     with dashboard_tab:
         st.subheader("Scouting Platform Overview")
+        st.caption("Monitor the current player pool through KPI cards, output plots, and positional distribution.")
         metric_cols = st.columns(5)
         metric_labels = [
             ("Total Players", len(filtered_df)),
@@ -463,6 +490,7 @@ def main() -> None:
 
     with profile_tab:
         st.subheader("Player Profile")
+        st.caption("Inspect a player’s profile in detail with key metrics, percentiles, and an analyst-style summary.")
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
         profile = build_player_profile(filtered_df, profile_player)
         if profile:
@@ -522,6 +550,7 @@ def main() -> None:
 
     with compare_tab:
         st.subheader("Player Comparison")
+        st.caption("Compare players side by side using radar, scatter, and comparative table views.")
         comparison_players = st.multiselect(
             "Select players to compare",
             options=sorted(filtered_df["Player"].tolist()),
@@ -565,6 +594,7 @@ def main() -> None:
 
     with similarity_tab:
         st.subheader("Similarity Search")
+        st.caption("Find the closest tactical and output-based matches for a selected scouting profile.")
         similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
         similar_players = build_similarity_search(filtered_df, similarity_player)
         if similar_players:
@@ -594,6 +624,7 @@ def main() -> None:
 
     with reports_tab:
         st.subheader("Scouting Reports")
+        st.caption("Generate a polished scouting brief for the selected player and download it as a report.")
         report_player = st.selectbox("Select a player for a written report", options=sorted(filtered_df["Player"].tolist()), index=0)
         report_profile = build_player_profile(filtered_df, report_player)
         report_similarities = build_similarity_search(filtered_df, report_player) if report_profile else []
