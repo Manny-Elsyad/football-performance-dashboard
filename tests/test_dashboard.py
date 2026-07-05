@@ -12,6 +12,7 @@ from app import (
     build_player_comparison_charts,
     build_player_profile,
     build_similarity_search,
+    build_scouting_report,
     build_winger_scoring,
     calculate_percentiles,
     filter_players,
@@ -126,3 +127,12 @@ def test_build_player_profile_returns_expected_keys():
     assert profile["Player"] == "Lamine Yamal"
     assert "Strengths" in profile
     assert "Weaknesses" in profile
+
+
+def test_build_scouting_report_returns_bytes():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    similarity = build_similarity_search(df, "Lamine Yamal")
+    report = build_scouting_report(profile, similarity)
+    assert isinstance(report, bytes)
+    assert b"Scouting Report" in report

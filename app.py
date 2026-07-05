@@ -14,6 +14,36 @@ import streamlit as st
 from statsbombpy import sb
 
 
+def build_scouting_report(profile: dict, similarity: list[dict]) -> bytes:
+    """Create a lightweight scouting brief that can be downloaded as a text report."""
+    lines = [
+        "Scouting Report",
+        "================",
+        f"Player: {profile.get('Player', 'Unknown')}",
+        f"Team: {profile.get('Team', 'Unknown')}",
+        f"Position: {profile.get('Position', 'Unknown')}",
+        f"Minutes: {profile.get('Minutes', 0)}",
+        f"Goals: {profile.get('Goals', 0)}",
+        f"Assists: {profile.get('Assists', 0)}",
+        f"xG: {profile.get('xG', 0)}",
+        f"xA: {profile.get('xA', 0)}",
+        f"Winger Scouting Score: {profile.get('WingerScoutingScore', 0)}",
+        "",
+        "Strengths:",
+        *[f"- {item}" for item in profile.get("Strengths", [])],
+        "",
+        "Weaknesses:",
+        *[f"- {item}" for item in profile.get("Weaknesses", [])],
+        "",
+        "Comparable Profiles:",
+    ]
+    for item in similarity:
+        lines.append(
+            f"- {item.get('Player', 'Unknown')} ({item.get('SimilarityPercent', 0)}% similarity, {item.get('WingerScoutingScore', 0)} score)"
+        )
+    return "\n".join(lines).encode("utf-8")
+
+
 st.set_page_config(page_title="Football Scouting Dashboard", page_icon="⚽", layout="wide")
 
 DATA_PATH = Path(__file__).parent / "data" / "players.csv"
@@ -388,6 +418,14 @@ def main() -> None:
             st.write("- " + "\n- ".join(profile["Strengths"]))
             st.write("Weaknesses")
             st.write("- " + "\n- ".join(profile["Weaknesses"]))
+
+        report_bytes = build_scouting_report(profile, similar_players if "similar_players" in locals() else [])
+        st.download_button(
+            label="Download scouting report",
+            data=report_bytes,
+            file_name=f"{profile['Player'].replace(' ', '_')}_scouting_report.txt",
+            mime="text/plain",
+        )
 
     st.subheader("Player Comparison")
     comparison_players = st.multiselect(
