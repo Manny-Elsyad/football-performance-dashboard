@@ -76,6 +76,22 @@ def build_advanced_metrics(df: pd.DataFrame) -> pd.DataFrame:
     return metrics_df
 
 
+def build_winger_scoring(df: pd.DataFrame) -> pd.DataFrame:
+    """Build a weighted Winger Scouting Score from offensive output proxies."""
+    scored_df = build_advanced_metrics(df).copy()
+    scored_df["WingerScoutingScore"] = (
+        scored_df["GoalContributionsPer90"] * 0.25
+        + scored_df["GoalsPer90"] * 0.20
+        + scored_df["AssistsPer90"] * 0.20
+        + scored_df["SuccessfulDribblesPer90"] * 0.15
+        + scored_df["KeyPassesPer90"] * 0.10
+        + scored_df["xGPer90"] * 0.05
+        + scored_df["xAPer90"] * 0.05
+    ).round(2)
+    scored_df["WingerScoutingScore"] = scored_df["WingerScoutingScore"].clip(0, 100)
+    return scored_df
+
+
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
     """Create a scatter chart for goals versus assists by player."""
     return px.scatter(
@@ -158,7 +174,7 @@ def main() -> None:
         min_minutes=min_minutes,
         min_goals=min_goals,
     )
-    filtered_df = build_advanced_metrics(filtered_df)
+    filtered_df = build_winger_scoring(filtered_df)
 
     if filtered_df.empty:
         st.warning("No players match the current filters. Try adjusting the controls.")
@@ -194,6 +210,7 @@ def main() -> None:
             "Goals",
             "Assists",
             "MinutesPlayed",
+            "WingerScoutingScore",
             "GoalsPer90",
             "AssistsPer90",
             "GoalContributionsPer90",

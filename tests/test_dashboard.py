@@ -9,6 +9,7 @@ from app import (
     DATA_PATH,
     build_advanced_metrics,
     build_kpi_summary,
+    build_winger_scoring,
     filter_players,
     load_data,
 )
@@ -85,3 +86,10 @@ def test_build_advanced_metrics_returns_expected_columns():
     }
     assert expected_columns.issubset(set(advanced_df.columns))
     assert not advanced_df.empty
+
+
+def test_build_winger_scoring_returns_expected_score_range():
+    df = load_data()
+    scored_df = build_winger_scoring(df)
+    assert "WingerScoutingScore" in scored_df.columns
+    assert scored_df["WingerScoutingScore"].between(0, 100).all()
