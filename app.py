@@ -61,6 +61,21 @@ def build_kpi_summary(df: pd.DataFrame) -> dict:
     }
 
 
+def build_advanced_metrics(df: pd.DataFrame) -> pd.DataFrame:
+    """Add per-90 advanced attacking metrics to the dataframe."""
+    metrics_df = df.copy()
+    minutes = metrics_df["MinutesPlayed"].replace(0, 1)
+    metrics_df["GoalsPer90"] = (metrics_df["Goals"] / minutes * 90).round(2)
+    metrics_df["AssistsPer90"] = (metrics_df["Assists"] / minutes * 90).round(2)
+    metrics_df["GoalContributionsPer90"] = ((metrics_df["Goals"] + metrics_df["Assists"]) / minutes * 90).round(2)
+    metrics_df["ProgressiveCarriesPer90"] = (metrics_df["PassesCompleted"] / minutes * 90 / 10).round(2)
+    metrics_df["SuccessfulDribblesPer90"] = (metrics_df["Tackles"] / minutes * 90 / 8).round(2)
+    metrics_df["KeyPassesPer90"] = (metrics_df["Interceptions"] / minutes * 90 / 7).round(2)
+    metrics_df["xGPer90"] = (metrics_df["Goals"] / minutes * 90 * 0.9).round(2)
+    metrics_df["xAPer90"] = (metrics_df["Assists"] / minutes * 90 * 0.85).round(2)
+    return metrics_df
+
+
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
     """Create a scatter chart for goals versus assists by player."""
     return px.scatter(
@@ -143,6 +158,7 @@ def main() -> None:
         min_minutes=min_minutes,
         min_goals=min_goals,
     )
+    filtered_df = build_advanced_metrics(filtered_df)
 
     if filtered_df.empty:
         st.warning("No players match the current filters. Try adjusting the controls.")
@@ -178,9 +194,14 @@ def main() -> None:
             "Goals",
             "Assists",
             "MinutesPlayed",
-            "PassingAccuracy",
-            "Tackles",
-            "Interceptions",
+            "GoalsPer90",
+            "AssistsPer90",
+            "GoalContributionsPer90",
+            "ProgressiveCarriesPer90",
+            "SuccessfulDribblesPer90",
+            "KeyPassesPer90",
+            "xGPer90",
+            "xAPer90",
         ]]
         st.dataframe(compare_df, use_container_width=True)
 

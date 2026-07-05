@@ -5,7 +5,13 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app import DATA_PATH, build_kpi_summary, filter_players, load_data
+from app import (
+    DATA_PATH,
+    build_advanced_metrics,
+    build_kpi_summary,
+    filter_players,
+    load_data,
+)
 
 
 def test_data_file_exists():
@@ -62,3 +68,20 @@ def test_build_kpi_summary_returns_expected_metrics():
     }
     assert summary["Goals"] >= 0
     assert summary["Assists"] >= 0
+
+
+def test_build_advanced_metrics_returns_expected_columns():
+    df = load_data()
+    advanced_df = build_advanced_metrics(df)
+    expected_columns = {
+        "GoalsPer90",
+        "AssistsPer90",
+        "GoalContributionsPer90",
+        "ProgressiveCarriesPer90",
+        "SuccessfulDribblesPer90",
+        "KeyPassesPer90",
+        "xGPer90",
+        "xAPer90",
+    }
+    assert expected_columns.issubset(set(advanced_df.columns))
+    assert not advanced_df.empty
