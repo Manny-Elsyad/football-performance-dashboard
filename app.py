@@ -5,13 +5,43 @@ comparison views, and analytical charts for recruiter-friendly storytelling.
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 from statsbombpy import sb
+
+
+def render_metric_card(label: str, value: Union[str, int, float], icon: str = "⚽", subtitle: str = "") -> None:
+    """Render a premium-looking KPI card in the Streamlit app."""
+    st.markdown(
+        f"""
+        <div class="scouting-card metric-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.6rem; margin-bottom:0.45rem;">
+                <div style="font-size:0.95rem; color:#475569; font-weight:600;">{label}</div>
+                <div style="font-size:1.1rem;">{icon}</div>
+            </div>
+            <div style="font-size:1.5rem; font-weight:700; color:#0f172a; margin-bottom:0.2rem;">{value}</div>
+            <div style="font-size:0.8rem; color:#64748b;">{subtitle}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_info_card(title: str, body: str, accent: str = "#2563eb") -> None:
+    """Render a polished content card for the scouting experience."""
+    st.markdown(
+        f"""
+        <div class="scouting-card" style="border-left:4px solid {accent};">
+            <h4 style="margin:0 0 0.35rem 0; color:#0f172a;">{title}</h4>
+            <div style="color:#475569; line-height:1.5;">{body}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def build_scouting_report(profile: dict, similarity: list[dict]) -> bytes:
@@ -407,10 +437,16 @@ def main() -> None:
         <style>
         .block-container {padding-top: 1rem; padding-bottom: 2rem;}
         div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.85rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
-        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.8rem;}
+        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.85rem;}
         .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1;}
         .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
         section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);}
+        .scouting-card {background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: 0 8px 24px rgba(15,23,42,0.06); margin-bottom: 1rem;}
+        .metric-card {min-height: 7.2rem;}
+        .report-card {background: linear-gradient(135deg, #fcfdff 0%, #f8fafc 100%); border: 1px solid #dbeafe; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);}
+        @media (max-width: 1100px) {
+            .block-container {padding-left: 0.9rem; padding-right: 0.9rem;}
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -465,30 +501,31 @@ def main() -> None:
     kpis = build_kpi_summary(filtered_df)
 
     dashboard_tab, profile_tab, compare_tab, similarity_tab, reports_tab = st.tabs(
-        ["Dashboard", "Player Profile", "Compare Players", "Similarity Search", "Scouting Reports"]
+        ["📊 Dashboard", "🧠 Player Profile", "⚖️ Compare Players", "🔎 Similarity Search", "📝 Scouting Reports"]
     )
 
     with dashboard_tab:
         st.subheader("Scouting Platform Overview")
         st.caption("Monitor the current player pool through KPI cards, output plots, and positional distribution.")
-        metric_cols = st.columns(5)
-        metric_labels = [
-            ("Total Players", len(filtered_df)),
-            ("Total Clubs", len(filtered_df["Team"].unique())),
-            ("Total Leagues", len(filtered_df["League"].unique()) if "League" in filtered_df.columns else 0),
-            ("Average Winger Score", round(filtered_df["WingerScoutingScore"].mean(), 1) if "WingerScoutingScore" in filtered_df.columns else 0),
-            ("Highest Rated Player", filtered_df.sort_values("WingerScoutingScore", ascending=False)["Player"].iloc[0] if not filtered_df.empty else "N/A"),
+
+        summary_items = [
+            ("Players in View", len(filtered_df), "Current scouting pool", "👥"),
+            ("Clubs Represented", len(filtered_df["Team"].unique()), "Cross-club comparison view", "🏟️"),
+            ("Average Winger Score", round(filtered_df["WingerScoutingScore"].mean(), 1) if "WingerScoutingScore" in filtered_df.columns else 0, "Overall scouting benchmark", "📈"),
+            ("Top Profile", filtered_df.sort_values("WingerScoutingScore", ascending=False)["Player"].iloc[0] if not filtered_df.empty else "N/A", "Highest-rated player", "⭐"),
         ]
-        for col, (label, value) in zip(metric_cols, metric_labels):
-            col.metric(label, value)
+        summary_cols = st.columns(4)
+        for col, (label, value, subtitle, icon) in zip(summary_cols, summary_items):
+            with col:
+                render_metric_card(label, value, icon=icon, subtitle=subtitle)
 
         chart_col1, chart_col2 = st.columns(2)
         with chart_col1:
-            st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True)
+            st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True, height=360)
         with chart_col2:
-            st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True)
+            st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True, height=360)
 
-        st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
+        st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True, height=340)
 
     with profile_tab:
         st.subheader("Player Profile")
@@ -496,53 +533,72 @@ def main() -> None:
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
         profile = build_player_profile(filtered_df, profile_player)
         if profile:
-            profile_cols = st.columns([1.1, 0.9])
+            profile_cols = st.columns([1.2, 0.8])
             with profile_cols[0]:
-                st.markdown(f"## {profile['Player']}")
-                st.caption(f"{profile['Team']} • {profile.get('League', 'Unknown')} • {profile['Position']}")
-                info_cols = st.columns(3)
-                info_cols[0].metric("Age", profile.get("Age", "N/A"))
-                info_cols[1].metric("Nationality", profile.get("Nationality", "N/A"))
-                info_cols[2].metric("Minutes", profile.get("Minutes", 0))
+                st.markdown(
+                    f"""
+                    <div class="scouting-card" style="padding: 1.2rem 1.2rem; border-left: 5px solid #2563eb;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; align-items:flex-start;">
+                            <div>
+                                <h2 style="margin:0; color:#0f172a;">{profile['Player']}</h2>
+                                <p style="margin:0.3rem 0 0 0; color:#475569; font-size:1rem;">{profile['Team']} • {profile.get('League', 'Unknown')} • {profile['Position']}</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color:white; border-radius: 1rem; padding: 0.7rem 0.9rem; min-width: 9rem; text-align: center;">
+                                <div style="font-size:0.8rem; opacity:0.9;">Overall Score</div>
+                                <div style="font-size:1.5rem; font-weight:700;">{profile.get('WingerScoutingScore', 0)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                info_cols = st.columns(4)
+                info_cols[0].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Age</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Age', 'N/A')}</div></div>", unsafe_allow_html=True)
+                info_cols[1].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Nationality</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Nationality', 'N/A')}</div></div>", unsafe_allow_html=True)
+                info_cols[2].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Minutes</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Minutes', 0)}</div></div>", unsafe_allow_html=True)
+                info_cols[3].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Position</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Position', 'Unknown')}</div></div>", unsafe_allow_html=True)
 
-                st.markdown("### Key KPIs")
-                kpi_cols = st.columns(3)
+                st.markdown("### Key Scouting KPIs")
+                kpi_cols = st.columns(4)
                 kpi_items = [
-                    ("Goals", profile.get("Goals", 0)),
-                    ("Assists", profile.get("Assists", 0)),
-                    ("Goals/90", profile.get("GoalsPer90", 0)),
-                    ("Assists/90", profile.get("AssistsPer90", 0)),
-                    ("xG", profile.get("xG", 0)),
-                    ("xA", profile.get("xA", 0)),
-                    ("Progressive Carries", profile.get("ProgressiveCarries", 0)),
-                    ("Successful Dribbles", profile.get("SuccessfulDribbles", 0)),
-                    ("Key Passes", profile.get("KeyPasses", 0)),
-                    ("Winger Scouting Score", profile.get("WingerScoutingScore", 0)),
+                    ("Goals", profile.get("Goals", 0), "⚽", "Output"),
+                    ("Assists", profile.get("Assists", 0), "🎯", "Creativity"),
+                    ("Goals/90", profile.get("GoalsPer90", 0), "📈", "Efficiency"),
+                    ("Successful Dribbles", profile.get("SuccessfulDribbles", 0), "🌀", "Ball carrying"),
                 ]
-                for idx, (label, value) in enumerate(kpi_items):
-                    col = kpi_cols[idx % 3]
-                    col.metric(label, value)
+                for col, (label, value, icon, subtitle) in zip(kpi_cols, kpi_items):
+                    with col:
+                        render_metric_card(label, value, icon=icon, subtitle=subtitle)
 
             with profile_cols[1]:
-                st.markdown("### Scouting Summary")
-                st.write(f"Recommendation: **{profile['Recommendation']}**")
-                st.write(f"Fit: **{profile['Fit']}**")
-                st.write("Strengths")
-                st.write("- " + "\n- ".join(profile["Strengths"]))
-                st.write("Weaknesses")
-                st.write("- " + "\n- ".join(profile["Weaknesses"]))
+                render_info_card("Scouting Recommendation", f"<strong>{profile['Recommendation']}</strong><br/>{profile['Fit']}", accent="#1d4ed8")
+                render_info_card("Strengths", "• " + "<br/>• ".join(profile["Strengths"]) if profile["Strengths"] else "• Strong overall scouting indicators", accent="#22c55e")
+                render_info_card("Weaknesses", "• " + "<br/>• ".join(profile["Weaknesses"]) if profile["Weaknesses"] else "• No major concerns identified", accent="#f59e0b")
 
-                st.markdown("### Percentile Bars")
-                for label, value in profile.get("Percentiles", {}).items():
-                    st.progress(min(value / 100, 1.0), text=f"{label}: {round(value, 1)}th percentile")
-
+            st.markdown("### Analytical View")
+            analysis_cols = st.columns([1.05, 0.95])
+            with analysis_cols[0]:
                 radar_df = pd.DataFrame(profile.get("RadarMetrics", []), columns=["Metric", "Value"])
                 if not radar_df.empty:
-                    st.markdown("### Radar Chart")
                     radar_fig = px.line_polar(radar_df, r="Value", theta="Metric", line_close=True, template="plotly_white")
-                    radar_fig.update_traces(fill="toself")
-                    st.plotly_chart(radar_fig, use_container_width=True)
-
+                    radar_fig.update_traces(fill="toself", line_color="#2563eb", marker_color="#1d4ed8")
+                    st.plotly_chart(radar_fig, use_container_width=True, height=360)
+            with analysis_cols[1]:
+                render_info_card("Percentile Profile", "", accent="#0f172a")
+                for label, value in profile.get("Percentiles", {}).items():
+                    st.markdown(
+                        f"""
+                        <div style="margin-bottom:0.65rem;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#334155; font-size:0.9rem;">
+                                <span>{label}</span><span>{round(value, 1)}th</span>
+                            </div>
+                            <div style="height:0.5rem; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                                <div style="height:100%; width:{min(value / 100, 1.0) * 100}%; background:linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border-radius:999px;"></div>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
                 st.markdown("### Scouting Recommendation")
                 st.write(
                     f"{profile['Player']} is a {profile['Position'].lower()} whose profile is shaped by {', '.join(profile['Strengths'][:2]) if profile['Strengths'] else 'strong overall scouting indicators'}. "
@@ -604,12 +660,47 @@ def main() -> None:
             similarity_df["SimilarityPercent"] = similarity_df["SimilarityPercent"].astype(float).round(1)
             similarity_df["SimilarityLabel"] = similarity_df["SimilarityPercent"].apply(lambda value: f"{value:.1f}%")
             st.info("Similarity is based on per-90 goal threat, creative output, dribbling impact, and link-up play. Higher percentages indicate a closer match for the selected tactical profile.")
-            st.dataframe(
-                similarity_df[["Player", "Team", "Position", "WingerScoutingScore", "SimilarityLabel"]],
-                use_container_width=True,
-                hide_index=True,
+
+            top_match = similarity_df.iloc[0]
+            st.markdown(
+                f"""
+                <div class="scouting-card" style="border-left:5px solid #1d4ed8; background:linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+                        <div>
+                            <div style="font-size:0.8rem; color:#2563eb; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Top Match</div>
+                            <h3 style="margin:0.2rem 0; color:#0f172a;">{top_match['Player']}</h3>
+                            <div style="color:#475569;">{top_match['Team']} • {top_match['Position']}</div>
+                        </div>
+                        <div style="background:#1d4ed8; color:white; border-radius:0.9rem; padding:0.75rem 0.95rem; text-align:center; min-width:7rem;">
+                            <div style="font-size:0.8rem; opacity:0.9;">Similarity</div>
+                            <div style="font-size:1.35rem; font-weight:700;">{top_match['SimilarityPercent']}%</div>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
-            st.markdown("### Top 5 Similar Players")
+
+            for _, row in similarity_df.iloc[1:].iterrows():
+                st.markdown(
+                    f"""
+                    <div class="scouting-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.45rem;">
+                            <div>
+                                <strong style="color:#0f172a;">{row['Player']}</strong>
+                                <div style="color:#64748b; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
+                            </div>
+                            <div style="font-weight:700; color:#1d4ed8;">{row['SimilarityPercent']}%</div>
+                        </div>
+                        <div style="height:0.5rem; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                            <div style="height:100%; width:{row['SimilarityPercent']}%; background:linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border-radius:999px;"></div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            st.markdown("### Similarity Comparison")
             st.plotly_chart(
                 px.bar(
                     similarity_df.sort_values("SimilarityPercent", ascending=False).head(5),
@@ -622,6 +713,7 @@ def main() -> None:
                     labels={"SimilarityPercent": "Similarity (%)", "Player": "Player"},
                 ),
                 use_container_width=True,
+                height=320,
             )
 
     with reports_tab:
@@ -634,13 +726,23 @@ def main() -> None:
             st.session_state["generated_report"] = build_scouting_report(report_profile, report_similarities)
             st.session_state["generated_report_name"] = f"{report_profile['Player'].replace(' ', '_')}_scouting_report.txt"
         if report_profile and st.session_state.get("generated_report"):
-            st.download_button(
-                label="Download scouting report",
-                data=st.session_state["generated_report"],
-                file_name=st.session_state.get("generated_report_name", "scouting_report.txt"),
-                mime="text/plain",
+            st.markdown(
+                f"""
+                <div class="scouting-card" style="border-left:5px solid #0f766e;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.8rem;">
+                        <div>
+                            <h3 style="margin:0; color:#0f172a;">{report_profile['Player']} • Scouting Brief</h3>
+                            <div style="color:#64748b;">Professional report ready for internal review</div>
+                        </div>
+                        <div>
+                            <a download="{st.session_state.get('generated_report_name', 'scouting_report.txt')}" href="data:text/plain;charset=utf-8,{st.session_state['generated_report'].decode('utf-8').replace(chr(10), '%0A')}" style="background:#0f766e; color:white; padding:0.55rem 0.9rem; border-radius:0.7rem; text-decoration:none; display:inline-block;">Download report</a>
+                        </div>
+                    </div>
+                    <div class="report-card" style="white-space:pre-wrap; font-family:ui-monospace, SFMono-Regular, monospace; color:#0f172a; line-height:1.55;">{st.session_state['generated_report'].decode('utf-8')}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
-            st.text_area("Generated report", st.session_state["generated_report"].decode("utf-8"), height=320)
         elif report_profile:
             st.info("Generate a written scouting report for the selected player to review and download it.")
 
