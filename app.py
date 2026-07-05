@@ -35,6 +35,9 @@ def build_scouting_report(profile: dict, similarity: list[dict]) -> bytes:
         "Weaknesses:",
         *[f"- {item}" for item in profile.get("Weaknesses", [])],
         "",
+        f"Recommendation: {profile.get('Recommendation', 'Monitor closely')}",
+        f"Fit: {profile.get('Fit', 'Developing profile')}",
+        "",
         "Comparable Profiles:",
     ]
     for item in similarity:
@@ -511,7 +514,7 @@ def main() -> None:
         similar_players = build_similarity_search(filtered_df, similarity_player)
         if similar_players:
             similarity_df = pd.DataFrame(similar_players)
-            st.caption("Similarity is based on per-90 goal threat, creation, dribbling, and chance creation metrics.")
+            st.caption("Similarity is based on per-90 goal threat, creative output, dribbling impact, and link-up play. Higher percentages indicate a closer match for the selected tactical profile.")
             st.dataframe(similarity_df, use_container_width=True)
             st.plotly_chart(
                 px.bar(
