@@ -561,17 +561,25 @@ def main() -> None:
         similar_players = build_similarity_search(filtered_df, similarity_player)
         if similar_players:
             similarity_df = pd.DataFrame(similar_players)
-            st.caption("Similarity is based on per-90 goal threat, creative output, dribbling impact, and link-up play. Higher percentages indicate a closer match for the selected tactical profile.")
-            st.dataframe(similarity_df, use_container_width=True)
+            similarity_df["SimilarityPercent"] = similarity_df["SimilarityPercent"].astype(float).round(1)
+            similarity_df["SimilarityLabel"] = similarity_df["SimilarityPercent"].apply(lambda value: f"{value:.1f}%")
+            st.info("Similarity is based on per-90 goal threat, creative output, dribbling impact, and link-up play. Higher percentages indicate a closer match for the selected tactical profile.")
+            st.dataframe(
+                similarity_df[["Player", "Team", "Position", "WingerScoutingScore", "SimilarityLabel"]],
+                use_container_width=True,
+                hide_index=True,
+            )
+            st.markdown("### Top 5 Similar Players")
             st.plotly_chart(
                 px.bar(
-                    similarity_df.sort_values("SimilarityPercent", ascending=False),
+                    similarity_df.sort_values("SimilarityPercent", ascending=False).head(5),
                     x="SimilarityPercent",
                     y="Player",
                     orientation="h",
                     color="Player",
                     title=f"Similarity to {similarity_player}",
                     template="plotly_white",
+                    labels={"SimilarityPercent": "Similarity (%)", "Player": "Player"},
                 ),
                 use_container_width=True,
             )
