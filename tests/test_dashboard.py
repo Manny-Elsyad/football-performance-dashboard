@@ -10,8 +10,10 @@ from app import (
     build_advanced_metrics,
     build_kpi_summary,
     build_player_comparison_charts,
+    build_player_profile,
     build_similarity_search,
     build_winger_scoring,
+    calculate_percentiles,
     filter_players,
     load_data,
 )
@@ -109,3 +111,18 @@ def test_build_similarity_search_returns_five_players():
     similar = build_similarity_search(df, "Lamine Yamal")
     assert len(similar) == 5
     assert all("Player" in row for row in similar)
+
+
+def test_calculate_percentiles_returns_expected_range():
+    df = load_data()
+    percentile_df = calculate_percentiles(df)
+    assert "Percentile" in percentile_df.columns
+    assert percentile_df["Percentile"].between(0, 100).all()
+
+
+def test_build_player_profile_returns_expected_keys():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    assert profile["Player"] == "Lamine Yamal"
+    assert "Strengths" in profile
+    assert "Weaknesses" in profile

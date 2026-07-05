@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from statsbombpy import sb
 
 
 st.set_page_config(page_title="Football Scouting Dashboard", page_icon="⚽", layout="wide")
@@ -20,10 +21,31 @@ DATA_PATH = Path(__file__).parent / "data" / "players.csv"
 
 @st.cache_data
 def load_data() -> pd.DataFrame:
-    """Load and preprocess the football player dataset."""
-    df = pd.read_csv(DATA_PATH)
-    df = df.sort_values(["Team", "Player"]).reset_index(drop=True)
-    return df
+    """Load and preprocess the football player dataset, preferring a real-world source when available."""
+    if DATA_PATH.exists():
+        df = pd.read_csv(DATA_PATH)
+        if not df.empty:
+            return df.sort_values(["Team", "Player"]).reset_index(drop=True)
+
+    try:
+        competitions = sb.competitions()
+        competition_ids = competitions[competitions["competition_gender"] == "male"]["competition_id"].tolist()[:5]
+        rows = []
+        for competition_id in competition_ids:
+            try:
+                matches = sb.matches(competition_id=competition_id, season_id=281)
+                if matches.empty:
+                    continue
+                for _, match in matches.head(3).iterrows():
+                    rows.append({"Competition": competition_id, "MatchID": match.get("match_id")})
+            except Exception:
+                continue
+        if rows:
+            return pd.DataFrame(rows)
+    except Exception:
+        pass
+
+    return pd.DataFrame(columns=["Player", "Team", "Position", "MinutesPlayed", "Goals", "Assists", "xG", "xA", "ProgressiveCarries", "SuccessfulDribbles", "KeyPasses", "WingerScoutingScore"])
 
 
 @st.cache_data
@@ -43,6 +65,70 @@ def filter_players(
     filtered = filtered[filtered["MinutesPlayed"] >= min_minutes]
     filtered = filtered[filtered["Goals"] >= min_goals]
     return filtered.reset_index(drop=True)
+
+
+def calculate_percentiles(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert scouting metrics to percentile ranks."""
+    percentile_df = df.copy()
+    metrics = [
+        "Goals",
+        "Assists",
+        "xG",
+        "xA",
+        "ProgressiveCarries",
+        "SuccessfulDribbles",
+        "KeyPasses",
+        "WingerScoutingScore",
+    ]
+    for metric in metrics:
+        if metric in percentile_df.columns:
+            percentile_df[metric] = pd.to_numeric(percentile_df[metric], errors="coerce")
+            percentile_df[metric + "Percentile"] = percentile_df[metric].rank(pct=True) * 100
+    percentile_df["Percentile"] = percentile_df[[col for col in percentile_df.columns if col.endswith("Percentile")]].mean(axis=1).round(1)
+    return percentile_df
+
+
+def build_player_profile(df: pd.DataFrame, player_name: str) -> dict:
+    """Create a structured player profile for the scouting detail page."""
+    scored_df = build_winger_scoring(df)
+    player_row = scored_df[scored_df["Player"] == player_name]
+    if player_row.empty:
+        return {}
+    row = player_row.iloc[0]
+    strengths = []
+    weaknesses = []
+    if row.get("GoalsPer90", 0) >= 0.8:
+        strengths.append("High goal threat")
+    else:
+        weaknesses.append("Goal output needs growth")
+    if row.get("AssistsPer90", 0) >= 0.7:
+        strengths.append("Creative chance creation")
+    else:
+        weaknesses.append("Chance creation is inconsistent")
+    if row.get("SuccessfulDribblesPer90", 0) >= 1.5:
+        strengths.append("Elite dribbling impact")
+    else:
+        weaknesses.append("Dribbling volume is modest")
+    if row.get("KeyPassesPer90", 0) >= 1.0:
+        strengths.append("Strong link-up play")
+    else:
+        weaknesses.append("Link-up play is limited")
+    return {
+        "Player": row["Player"],
+        "Team": row.get("Team", "Unknown"),
+        "Position": row.get("Position", "Unknown"),
+        "Minutes": int(row.get("MinutesPlayed", 0)),
+        "Goals": int(row.get("Goals", 0)),
+        "Assists": int(row.get("Assists", 0)),
+        "xG": round(float(row.get("xG", 0)), 2),
+        "xA": round(float(row.get("xA", 0)), 2),
+        "ProgressiveCarries": round(float(row.get("ProgressiveCarries", 0)), 2),
+        "SuccessfulDribbles": round(float(row.get("SuccessfulDribbles", 0)), 2),
+        "KeyPasses": round(float(row.get("KeyPasses", 0)), 2),
+        "WingerScoutingScore": round(float(row.get("WingerScoutingScore", 0)), 2),
+        "Strengths": strengths,
+        "Weaknesses": weaknesses,
+    }
 
 
 def build_kpi_summary(df: pd.DataFrame) -> dict:
