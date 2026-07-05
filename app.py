@@ -164,11 +164,32 @@ def build_player_profile(df: pd.DataFrame, player_name: str) -> dict:
         strengths.append("Strong link-up play")
     else:
         weaknesses.append("Link-up play is limited")
+    percentile_map = {
+        "Goals": row.get("GoalsPercentile", 0),
+        "Assists": row.get("AssistsPercentile", 0),
+        "Goals/90": row.get("GoalsPer90Percentile", 0),
+        "Assists/90": row.get("AssistsPer90Percentile", 0),
+        "xG": row.get("xGPercentile", 0),
+        "xA": row.get("xAPercentile", 0),
+        "Progressive Carries": row.get("ProgressiveCarriesPercentile", 0),
+        "Successful Dribbles": row.get("SuccessfulDribblesPercentile", 0),
+        "Key Passes": row.get("KeyPassesPercentile", 0),
+        "Winger Scouting Score": row.get("WingerScoutingScorePercentile", 0),
+    }
+    radar_metrics = [
+        ("Goals/90", row.get("GoalsPer90", 0)),
+        ("Assists/90", row.get("AssistsPer90", 0)),
+        ("xG", row.get("xG", 0)),
+        ("xA", row.get("xA", 0)),
+        ("Successful Dribbles", row.get("SuccessfulDribblesPer90", 0)),
+    ]
     return {
         "Player": row["Player"],
         "Team": row.get("Team", "Unknown"),
         "League": row.get("League", "Unknown"),
         "Position": row.get("Position", "Unknown"),
+        "Age": row.get("Age", "Unknown"),
+        "Nationality": row.get("Nationality", "Unknown"),
         "Minutes": int(row.get("MinutesPlayed", 0)),
         "Goals": int(row.get("Goals", 0)),
         "Assists": int(row.get("Assists", 0)),
@@ -182,6 +203,8 @@ def build_player_profile(df: pd.DataFrame, player_name: str) -> dict:
         "SuccessfulDribbles": round(float(row.get("SuccessfulDribbles", 0)), 2),
         "KeyPasses": round(float(row.get("KeyPasses", 0)), 2),
         "WingerScoutingScore": round(float(row.get("WingerScoutingScore", 0)), 2),
+        "Percentiles": percentile_map,
+        "RadarMetrics": radar_metrics,
         "Strengths": strengths,
         "Weaknesses": weaknesses,
         "Recommendation": recommendation,
@@ -435,40 +458,59 @@ def main() -> None:
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
         profile = build_player_profile(filtered_df, profile_player)
         if profile:
-            profile_cols = st.columns([1.2, 0.8])
+            profile_cols = st.columns([1.1, 0.9])
             with profile_cols[0]:
-                st.markdown(f"### {profile['Player']}")
+                st.markdown(f"## {profile['Player']}")
                 st.caption(f"{profile['Team']} • {profile.get('League', 'Unknown')} • {profile['Position']}")
-                st.write(f"Minutes: **{profile['Minutes']}**")
-                st.write(f"Goals: **{profile['Goals']}**")
-                st.write(f"Assists: **{profile['Assists']}**")
-                st.write(f"xG: **{profile['xG']}**")
-                st.write(f"xA: **{profile['xA']}**")
-                st.write(f"Goals/90: **{profile['GoalsPer90']}**")
-                st.write(f"Assists/90: **{profile['AssistsPer90']}**")
-                st.write(f"xG/90: **{profile['xGPer90']}**")
-                st.write(f"xA/90: **{profile['xAPer90']}**")
+                info_cols = st.columns(3)
+                info_cols[0].metric("Age", profile.get("Age", "N/A"))
+                info_cols[1].metric("Nationality", profile.get("Nationality", "N/A"))
+                info_cols[2].metric("Minutes", profile.get("Minutes", 0))
+
+                st.markdown("### Key KPIs")
+                kpi_cols = st.columns(3)
+                kpi_items = [
+                    ("Goals", profile.get("Goals", 0)),
+                    ("Assists", profile.get("Assists", 0)),
+                    ("Goals/90", profile.get("GoalsPer90", 0)),
+                    ("Assists/90", profile.get("AssistsPer90", 0)),
+                    ("xG", profile.get("xG", 0)),
+                    ("xA", profile.get("xA", 0)),
+                    ("Progressive Carries", profile.get("ProgressiveCarries", 0)),
+                    ("Successful Dribbles", profile.get("SuccessfulDribbles", 0)),
+                    ("Key Passes", profile.get("KeyPasses", 0)),
+                    ("Winger Scouting Score", profile.get("WingerScoutingScore", 0)),
+                ]
+                for idx, (label, value) in enumerate(kpi_items):
+                    col = kpi_cols[idx % 3]
+                    col.metric(label, value)
+
             with profile_cols[1]:
                 st.markdown("### Scouting Summary")
-                st.write(f"Winger Scouting Score: **{profile['WingerScoutingScore']}**")
                 st.write(f"Recommendation: **{profile['Recommendation']}**")
                 st.write(f"Fit: **{profile['Fit']}**")
-                st.write(f"Progressive Carries: **{profile['ProgressiveCarries']}**")
-                st.write(f"Successful Dribbles: **{profile['SuccessfulDribbles']}**")
-                st.write(f"Key Passes: **{profile['KeyPasses']}**")
                 st.write("Strengths")
                 st.write("- " + "\n- ".join(profile["Strengths"]))
                 st.write("Weaknesses")
                 st.write("- " + "\n- ".join(profile["Weaknesses"]))
 
-            metric_items = [
-                ("Goals", profile.get("Goals", 0), 100),
-                ("Assists", profile.get("Assists", 0), 100),
-                ("Winger Score", profile.get("WingerScoutingScore", 0), 100),
-            ]
-            st.markdown("### Key Metric Percentiles")
-            for label, value, max_value in metric_items:
-                st.progress(min(value / max_value, 1.0), text=f"{label}: {value}")
+                st.markdown("### Percentile Bars")
+                for label, value in profile.get("Percentiles", {}).items():
+                    st.progress(min(value / 100, 1.0), text=f"{label}: {round(value, 1)}th percentile")
+
+                radar_df = pd.DataFrame(profile.get("RadarMetrics", []), columns=["Metric", "Value"])
+                if not radar_df.empty:
+                    st.markdown("### Radar Chart")
+                    radar_fig = px.line_polar(radar_df, r="Value", theta="Metric", line_close=True, template="plotly_white")
+                    radar_fig.update_traces(fill="toself")
+                    st.plotly_chart(radar_fig, use_container_width=True)
+
+                st.markdown("### Scouting Recommendation")
+                st.write(
+                    f"{profile['Player']} is a {profile['Position'].lower()} whose profile is shaped by {', '.join(profile['Strengths'][:2]) if profile['Strengths'] else 'strong overall scouting indicators'}. "
+                    f"The main strengths are {', '.join(profile['Strengths']) if profile['Strengths'] else 'consistent output'} while the main risks remain {', '.join(profile['Weaknesses']) if profile['Weaknesses'] else 'limited sample size'}. "
+                    f"The tactical fit is best described as {profile['Fit'].lower()}, with a recommendation of {profile['Recommendation'].lower()}."
+                )
 
     with compare_tab:
         st.subheader("Player Comparison")

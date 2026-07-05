@@ -147,6 +147,15 @@ def test_build_player_profile_includes_recommendation_fields():
     assert "Fit" in profile
 
 
+def test_build_player_profile_includes_demographics_and_percentiles():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    assert "Age" in profile
+    assert "Nationality" in profile
+    assert "Percentiles" in profile
+    assert "RadarMetrics" in profile
+
+
 def test_build_scouting_report_returns_bytes():
     df = load_data()
     profile = build_player_profile(df, "Lamine Yamal")
