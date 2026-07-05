@@ -9,6 +9,7 @@ from app import (
     DATA_PATH,
     build_advanced_metrics,
     build_kpi_summary,
+    build_player_comparison_charts,
     build_winger_scoring,
     filter_players,
     load_data,
@@ -93,3 +94,10 @@ def test_build_winger_scoring_returns_expected_score_range():
     scored_df = build_winger_scoring(df)
     assert "WingerScoutingScore" in scored_df.columns
     assert scored_df["WingerScoutingScore"].between(0, 100).all()
+
+
+def test_build_player_comparison_charts_returns_expected_objects():
+    df = load_data()
+    charts = build_player_comparison_charts(df, ["Lamine Yamal", "Vinicius Junior"])
+    assert len(charts) == 2
+    assert all(chart is not None for chart in charts)

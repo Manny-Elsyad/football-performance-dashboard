@@ -9,6 +9,7 @@ from typing import Optional
 
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
 
@@ -111,6 +112,45 @@ def build_overview_chart(df: pd.DataFrame) -> px.scatter:
         title="Goals vs Assists",
         template="plotly_white",
     )
+
+
+def build_player_comparison_charts(df: pd.DataFrame, players: list[str]) -> list[go.Figure]:
+    """Create radar and scatter charts for comparing two selected players."""
+    if len(players) < 2:
+        return [go.Figure(), go.Figure()]
+    comparison_df = df[df["Player"].isin(players)].copy()
+    if comparison_df.empty:
+        return [go.Figure(), go.Figure()]
+
+    comparison_df = build_winger_scoring(comparison_df)
+    metrics = ["GoalsPer90", "AssistsPer90", "GoalContributionsPer90", "SuccessfulDribblesPer90", "KeyPassesPer90"]
+    radar_df = comparison_df[["Player", *metrics]].copy()
+    radar_df = radar_df.set_index("Player")
+    radar_df = radar_df.T
+
+    radar_fig = go.Figure()
+    for player in players:
+        values = [radar_df[player][metric] for metric in metrics]
+        radar_fig.add_trace(
+            go.Scatterpolar(
+                r=[*values, values[0]],
+                theta=[*metrics, metrics[0]],
+                fill="toself",
+                name=player,
+            )
+        )
+
+    scatter_fig = px.scatter(
+        comparison_df,
+        x="GoalsPer90",
+        y="AssistsPer90",
+        color="Player",
+        size="MinutesPlayed",
+        hover_name="Player",
+        title="Goals/90 vs Assists/90",
+        template="plotly_white",
+    )
+    return [radar_fig, scatter_fig]
 
 
 def build_top_players_chart(df: pd.DataFrame) -> px.bar:
@@ -228,6 +268,20 @@ def main() -> None:
         st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True)
     with chart_col2:
         st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True)
+
+    st.subheader("Player Comparison Tools")
+    comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
+    comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
+    if comparison_two and comparison_two_b:
+        radar_fig, scatter_fig = build_player_comparison_charts(
+            filtered_df,
+            [comparison_two, comparison_two_b],
+        )
+        radar_col, scatter_col = st.columns(2)
+        with radar_col:
+            st.plotly_chart(radar_fig, use_container_width=True)
+        with scatter_col:
+            st.plotly_chart(scatter_fig, use_container_width=True)
 
     st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True)
 
