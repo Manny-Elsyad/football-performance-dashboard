@@ -4,11 +4,14 @@ A portfolio-quality football scouting dashboard built with Python, Streamlit, Pa
 
 ## Screenshots
 
-- Dashboard overview with KPI cards and modern styling
+To make the project presentation-ready, add screenshots to an images folder once you have captured them locally.
+
+Suggested screenshots:
+- Dashboard overview with KPI cards and the hero section
 - Player comparison charts with radar and scatter views
 - Similarity search recommendations for scouting profiles
 
-> Add screenshots to the repository image folder once you have them ready for a more polished portfolio presentation.
+> No placeholder or fake screenshots are included in the repository. Capture real images from your local Streamlit run when you are ready to showcase the app visually.
 
 ## Project Overview
 
