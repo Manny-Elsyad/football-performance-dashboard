@@ -435,15 +435,19 @@ def main() -> None:
     st.markdown(
         """
         <style>
-        .block-container {padding-top: 1rem; padding-bottom: 2rem;}
-        div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.85rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
-        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.85rem;}
+        .block-container {padding-top: 1rem; padding-bottom: 2rem; max-width: 1450px;}
+        div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.9rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
+        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.95rem;}
         .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1;}
         .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
         section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);}
-        .scouting-card {background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: 0 8px 24px rgba(15,23,42,0.06); margin-bottom: 1rem;}
+        .scouting-card {background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 1.1rem; padding: 1rem 1.1rem; box-shadow: 0 10px 28px rgba(15,23,42,0.06); margin-bottom: 0.95rem;}
         .metric-card {min-height: 7.2rem;}
         .report-card {background: linear-gradient(135deg, #fcfdff 0%, #f8fafc 100%); border: 1px solid #dbeafe; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);}
+        .section-kicker {font-size: 0.74rem; color: #2563eb; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; margin-bottom: 0.2rem;}
+        .section-title {font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;}
+        .section-copy {color: #64748b; font-size: 0.94rem; margin-bottom: 0.8rem;}
+        .score-ring {width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); color: white; font-size: 1.35rem; font-weight: 700; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.24);}
         @media (max-width: 1100px) {
             .block-container {padding-left: 0.9rem; padding-right: 0.9rem;}
         }
@@ -452,25 +456,16 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    st.markdown("### Scouting Workflow")
-    st.caption("Move seamlessly from scouting overview to detailed profiling, comparison, and recruitment recommendations.")
-    workflow_cols = st.columns(3)
-    workflow_cards = [
-        ("Player Profiling", "Assess output, efficiency, and tactical role in a single recruitment view."),
-        ("Comparative Analysis", "Benchmark players side by side with percentile-led scouting insight."),
-        ("Recruitment Intelligence", "Surface similar profiles and generate professional scouting reports."),
-    ]
-    for col, (title, body) in zip(workflow_cols, workflow_cards):
-        with col:
-            st.markdown(
-                f"""
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.85rem; padding: 0.95rem 1rem; min-height: 6.5rem;">
-                    <h4 style="margin: 0 0 0.3rem 0; color: #0f172a;">{title}</h4>
-                    <p style="margin: 0; color: #475569;">{body}</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+    st.markdown(
+        """
+        <div class="scouting-card" style="padding: 1rem 1.15rem; border-left: 4px solid #2563eb;">
+            <div class="section-kicker">Scouting control centre</div>
+            <div style="font-size: 1.18rem; font-weight: 700; color: #0f172a; margin-bottom: 0.2rem;">A premium view of the current player pool</div>
+            <div class="section-copy">Review performance, benchmark profiles, and surface recruitment-ready matches from one workspace.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     df = load_data()
 
@@ -505,8 +500,8 @@ def main() -> None:
     )
 
     with dashboard_tab:
-        st.subheader("Scouting Platform Overview")
-        st.caption("Monitor the current player pool through KPI cards, output plots, and positional distribution.")
+        st.subheader("Scouting Control Center")
+        st.caption("A tighter, more executive view of the current scouting pool.")
 
         summary_items = [
             ("Players in View", len(filtered_df), "Current scouting pool", "👥"),
@@ -519,46 +514,78 @@ def main() -> None:
             with col:
                 render_metric_card(label, value, icon=icon, subtitle=subtitle)
 
-        chart_col1, chart_col2 = st.columns(2)
+        st.markdown("<div class='section-kicker'>Analytical view</div>", unsafe_allow_html=True)
+        chart_col1, chart_col2, chart_col3 = st.columns([1.2, 1.1, 0.9])
         with chart_col1:
-            st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True, height=360)
+            st.plotly_chart(build_overview_chart(filtered_df), use_container_width=True, height=390)
         with chart_col2:
-            st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True, height=360)
+            st.plotly_chart(build_top_players_chart(filtered_df), use_container_width=True, height=390)
+        with chart_col3:
+            top_players = filtered_df[["Player", "Team", "Position", "Goals", "Assists", "WingerScoutingScore"]].sort_values("WingerScoutingScore", ascending=False).head(8).reset_index(drop=True)
+            st.markdown("<div class='section-title'>Top players in view</div>", unsafe_allow_html=True)
+            st.dataframe(top_players, use_container_width=True, hide_index=True, height=330)
 
-        st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True, height=340)
+        bottom_col1, bottom_col2 = st.columns(2)
+        with bottom_col1:
+            report_player = filtered_df["Player"].iloc[0]
+            report_profile = build_player_profile(filtered_df, report_player)
+            st.markdown(
+                f"""
+                <div class="scouting-card" style="border-left:4px solid #0f766e;">
+                    <div class="section-kicker">Scouting report snapshot</div>
+                    <div class="section-title">{report_profile.get('Player', report_player)} • report ready</div>
+                    <div class="section-copy">{report_profile.get('Recommendation', 'Monitor closely')} • {report_profile.get('Fit', 'Developing profile')}</div>
+                    <div style="color:#475569;">Open the Scouting Reports tab for a full, downloadable brief.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with bottom_col2:
+            similarity_player = filtered_df["Player"].iloc[0]
+            similar_players = build_similarity_search(filtered_df, similarity_player)
+            top_match = similar_players[0] if similar_players else {}
+            st.markdown(
+                f"""
+                <div class="scouting-card" style="border-left:4px solid #2563eb;">
+                    <div class="section-kicker">Similarity spotlight</div>
+                    <div class="section-title">Top match: {top_match.get('Player', similarity_player)}</div>
+                    <div class="section-copy">{top_match.get('Team', 'N/A')} • {top_match.get('Position', 'N/A')} • {top_match.get('SimilarityPercent', 0)}% similarity</div>
+                    <div style="color:#475569;">Use the Similarity Search tab for the full ranked list of comparable profiles.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with profile_tab:
         st.subheader("Player Profile")
-        st.caption("Inspect a player’s profile in detail with key metrics, percentiles, and an analyst-style summary.")
+        st.caption("The flagship page for a detailed scouting view of the selected player.")
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
         profile = build_player_profile(filtered_df, profile_player)
         if profile:
-            profile_cols = st.columns([1.2, 0.8])
+            profile_cols = st.columns([0.9, 1.1])
             with profile_cols[0]:
                 st.markdown(
                     f"""
-                    <div class="scouting-card" style="padding: 1.2rem 1.2rem; border-left: 5px solid #2563eb;">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; align-items:flex-start;">
-                            <div>
-                                <h2 style="margin:0; color:#0f172a;">{profile['Player']}</h2>
-                                <p style="margin:0.3rem 0 0 0; color:#475569; font-size:1rem;">{profile['Team']} • {profile.get('League', 'Unknown')} • {profile['Position']}</p>
-                            </div>
-                            <div style="background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color:white; border-radius: 1rem; padding: 0.7rem 0.9rem; min-width: 9rem; text-align: center;">
-                                <div style="font-size:0.8rem; opacity:0.9;">Overall Score</div>
-                                <div style="font-size:1.5rem; font-weight:700;">{profile.get('WingerScoutingScore', 0)}</div>
-                            </div>
+                    <div class="scouting-card" style="padding: 1.1rem 1.15rem; border-left: 5px solid #2563eb;">
+                        <div style="display:flex; justify-content:center; margin-bottom:0.85rem;">
+                            <div class="score-ring">{profile.get('WingerScoutingScore', 0)}</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div class="section-kicker">Primary profile</div>
+                            <h2 style="margin:0.2rem 0 0.2rem 0; color:#0f172a;">{profile['Player']}</h2>
+                            <div style="color:#475569; font-size:0.98rem;">{profile['Team']} • {profile.get('League', 'Unknown')}</div>
+                            <div style="color:#475569; font-size:0.95rem; margin-top:0.25rem;">{profile['Position']} • {profile.get('Nationality', 'N/A')}</div>
                         </div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-                info_cols = st.columns(4)
-                info_cols[0].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Age</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Age', 'N/A')}</div></div>", unsafe_allow_html=True)
-                info_cols[1].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Nationality</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Nationality', 'N/A')}</div></div>", unsafe_allow_html=True)
-                info_cols[2].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Minutes</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Minutes', 0)}</div></div>", unsafe_allow_html=True)
-                info_cols[3].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Position</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Position', 'Unknown')}</div></div>", unsafe_allow_html=True)
+                info_grid = st.columns(2)
+                info_grid[0].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Minutes</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Minutes', 0)}</div></div>", unsafe_allow_html=True)
+                info_grid[1].markdown(f"<div class='scouting-card'><div style='color:#64748b;'>Age</div><div style='font-size:1.15rem; font-weight:700; color:#0f172a;'>{profile.get('Age', 'N/A')}</div></div>", unsafe_allow_html=True)
 
-                st.markdown("### Key Scouting KPIs")
+            with profile_cols[1]:
+                st.markdown("<div class='section-kicker'>Key scouting metrics</div>", unsafe_allow_html=True)
                 kpi_cols = st.columns(4)
                 kpi_items = [
                     ("Goals", profile.get("Goals", 0), "⚽", "Output"),
@@ -570,25 +597,20 @@ def main() -> None:
                     with col:
                         render_metric_card(label, value, icon=icon, subtitle=subtitle)
 
-            with profile_cols[1]:
-                render_info_card("Scouting Recommendation", f"<strong>{profile['Recommendation']}</strong><br/>{profile['Fit']}", accent="#1d4ed8")
-                render_info_card("Strengths", "• " + "<br/>• ".join(profile["Strengths"]) if profile["Strengths"] else "• Strong overall scouting indicators", accent="#22c55e")
-                render_info_card("Weaknesses", "• " + "<br/>• ".join(profile["Weaknesses"]) if profile["Weaknesses"] else "• No major concerns identified", accent="#f59e0b")
-
-            st.markdown("### Analytical View")
+            st.markdown("<div class='section-kicker' style='margin-top:0.4rem;'>Analytical view</div>", unsafe_allow_html=True)
             analysis_cols = st.columns([1.05, 0.95])
             with analysis_cols[0]:
                 radar_df = pd.DataFrame(profile.get("RadarMetrics", []), columns=["Metric", "Value"])
                 if not radar_df.empty:
                     radar_fig = px.line_polar(radar_df, r="Value", theta="Metric", line_close=True, template="plotly_white")
                     radar_fig.update_traces(fill="toself", line_color="#2563eb", marker_color="#1d4ed8")
-                    st.plotly_chart(radar_fig, use_container_width=True, height=360)
+                    st.plotly_chart(radar_fig, use_container_width=True, height=400)
             with analysis_cols[1]:
-                render_info_card("Percentile Profile", "", accent="#0f172a")
+                st.markdown("<div class='scouting-card'><div class='section-title'>Percentile profile</div></div>", unsafe_allow_html=True)
                 for label, value in profile.get("Percentiles", {}).items():
                     st.markdown(
                         f"""
-                        <div style="margin-bottom:0.65rem;">
+                        <div class="scouting-card" style="padding: 0.8rem 0.9rem; margin-bottom: 0.55rem;">
                             <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem; color:#334155; font-size:0.9rem;">
                                 <span>{label}</span><span>{round(value, 1)}th</span>
                             </div>
@@ -599,16 +621,39 @@ def main() -> None:
                         """,
                         unsafe_allow_html=True,
                     )
-                st.markdown("### Scouting Recommendation")
-                st.write(
-                    f"{profile['Player']} is a {profile['Position'].lower()} whose profile is shaped by {', '.join(profile['Strengths'][:2]) if profile['Strengths'] else 'strong overall scouting indicators'}. "
-                    f"The main strengths are {', '.join(profile['Strengths']) if profile['Strengths'] else 'consistent output'} while the main risks remain {', '.join(profile['Weaknesses']) if profile['Weaknesses'] else 'limited sample size'}. "
-                    f"The tactical fit is best described as {profile['Fit'].lower()}, with a recommendation of {profile['Recommendation'].lower()}."
-                )
+
+            summary_grid = st.columns(2)
+            with summary_grid[0]:
+                render_info_card("Strengths", "• " + "<br/>• ".join(profile["Strengths"]) if profile["Strengths"] else "• Strong overall scouting indicators", accent="#22c55e")
+            with summary_grid[1]:
+                render_info_card("Weaknesses", "• " + "<br/>• ".join(profile["Weaknesses"]) if profile["Weaknesses"] else "• No major concerns identified", accent="#f59e0b")
+            fit_col, recommendation_col = st.columns(2)
+            with fit_col:
+                render_info_card("Tactical fit", profile.get("Fit", "Developing profile"), accent="#0f172a")
+            with recommendation_col:
+                render_info_card("Recommendation", profile.get("Recommendation", "Monitor closely"), accent="#1d4ed8")
+            st.markdown(
+                f"""
+                <div class="scouting-card" style="border-left:4px solid #2563eb;">
+                    <div class="section-title">Scouting note</div>
+                    <div style="color:#475569; line-height:1.55;">{profile['Player']} is a {profile['Position'].lower()} whose profile is shaped by {', '.join(profile['Strengths'][:2]) if profile['Strengths'] else 'strong overall scouting indicators'}. The tactical fit is best described as {profile['Fit'].lower()}, with a recommendation of {profile['Recommendation'].lower()}.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     with compare_tab:
         st.subheader("Player Comparison")
         st.caption("Compare players side by side using radar, scatter, and comparative table views.")
+        st.markdown(
+            """
+            <div class="scouting-card" style="border-left:4px solid #2563eb;">
+                <div class="section-kicker">Comparison workspace</div>
+                <div class="section-title">Benchmark two or more players with the same premium layout used across the platform.</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         comparison_players = st.multiselect(
             "Select players to compare",
             options=sorted(filtered_df["Player"].tolist()),
@@ -634,9 +679,9 @@ def main() -> None:
                 "xGPer90",
                 "xAPer90",
             ]]
-            st.dataframe(compare_df, use_container_width=True)
+            st.markdown("<div class='section-title'>Comparison table</div>", unsafe_allow_html=True)
+            st.dataframe(compare_df, use_container_width=True, height=260)
 
-        st.subheader("Player Comparison Tools")
         comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
         comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
         if comparison_two and comparison_two_b:
@@ -646,9 +691,9 @@ def main() -> None:
             )
             radar_col, scatter_col = st.columns(2)
             with radar_col:
-                st.plotly_chart(radar_fig, use_container_width=True)
+                st.plotly_chart(radar_fig, use_container_width=True, height=380)
             with scatter_col:
-                st.plotly_chart(scatter_fig, use_container_width=True)
+                st.plotly_chart(scatter_fig, use_container_width=True, height=380)
 
     with similarity_tab:
         st.subheader("Similarity Search")
@@ -659,7 +704,15 @@ def main() -> None:
             similarity_df = pd.DataFrame(similar_players)
             similarity_df["SimilarityPercent"] = similarity_df["SimilarityPercent"].astype(float).round(1)
             similarity_df["SimilarityLabel"] = similarity_df["SimilarityPercent"].apply(lambda value: f"{value:.1f}%")
-            st.info("Similarity is based on per-90 goal threat, creative output, dribbling impact, and link-up play. Higher percentages indicate a closer match for the selected tactical profile.")
+            st.markdown(
+                """
+                <div class="scouting-card" style="border-left:4px solid #2563eb;">
+                    <div class="section-kicker">Similarity intelligence</div>
+                    <div class="section-copy">Comparison is based on per-90 goal threat, creative output, dribbling impact, and link-up play.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
             top_match = similarity_df.iloc[0]
             st.markdown(
@@ -681,26 +734,28 @@ def main() -> None:
                 unsafe_allow_html=True,
             )
 
-            for _, row in similarity_df.iloc[1:].iterrows():
-                st.markdown(
-                    f"""
-                    <div class="scouting-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.45rem;">
-                            <div>
-                                <strong style="color:#0f172a;">{row['Player']}</strong>
-                                <div style="color:#64748b; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
+            match_cols = st.columns(2)
+            for idx, (_, row) in enumerate(similarity_df.iloc[1:].iterrows()):
+                with match_cols[idx % 2]:
+                    st.markdown(
+                        f"""
+                        <div class="scouting-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.45rem;">
+                                <div>
+                                    <strong style="color:#0f172a;">{row['Player']}</strong>
+                                    <div style="color:#64748b; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
+                                </div>
+                                <div style="font-weight:700; color:#1d4ed8;">{row['SimilarityPercent']}%</div>
                             </div>
-                            <div style="font-weight:700; color:#1d4ed8;">{row['SimilarityPercent']}%</div>
+                            <div style="height:0.5rem; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                                <div style="height:100%; width:{row['SimilarityPercent']}%; background:linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border-radius:999px;"></div>
+                            </div>
                         </div>
-                        <div style="height:0.5rem; background:#e2e8f0; border-radius:999px; overflow:hidden;">
-                            <div style="height:100%; width:{row['SimilarityPercent']}%; background:linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border-radius:999px;"></div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-            st.markdown("### Similarity Comparison")
+            st.markdown("<div class='section-title'>Similarity comparison</div>", unsafe_allow_html=True)
             st.plotly_chart(
                 px.bar(
                     similarity_df.sort_values("SimilarityPercent", ascending=False).head(5),
@@ -728,10 +783,11 @@ def main() -> None:
         if report_profile and st.session_state.get("generated_report"):
             st.markdown(
                 f"""
-                <div class="scouting-card" style="border-left:5px solid #0f766e;">
+                <div class="scouting-card" style="border-left:5px solid #0f766e; padding: 1.1rem 1.15rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.8rem;">
                         <div>
-                            <h3 style="margin:0; color:#0f172a;">{report_profile['Player']} • Scouting Brief</h3>
+                            <div class="section-kicker">Report output</div>
+                            <h3 style="margin:0.15rem 0; color:#0f172a;">{report_profile['Player']} • Scouting Brief</h3>
                             <div style="color:#64748b;">Professional report ready for internal review</div>
                         </div>
                         <div>
@@ -744,7 +800,15 @@ def main() -> None:
                 unsafe_allow_html=True,
             )
         elif report_profile:
-            st.info("Generate a written scouting report for the selected player to review and download it.")
+            st.markdown(
+                """
+                <div class="scouting-card" style="border-left:4px solid #2563eb;">
+                    <div class="section-kicker">Report status</div>
+                    <div class="section-copy">Generate a written scouting report for the selected player to review and download it.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
 
 if __name__ == "__main__":
