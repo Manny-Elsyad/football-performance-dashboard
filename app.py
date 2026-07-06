@@ -11,7 +11,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from statsbombpy import sb
 
 
 def render_metric_card(label: str, value: Union[str, int, float], icon: str = "⚽", subtitle: str = "") -> None:
@@ -97,29 +96,11 @@ def get_tab_labels() -> list[str]:
 
 @st.cache_data
 def load_data() -> pd.DataFrame:
-    """Load and preprocess the football player dataset, preferring a real-world source when available."""
+    """Load and preprocess the bundled football player dataset."""
     if DATA_PATH.exists():
         df = pd.read_csv(DATA_PATH)
         if not df.empty:
             return df.sort_values(["Team", "Player"]).reset_index(drop=True)
-
-    try:
-        competitions = sb.competitions()
-        competition_ids = competitions[competitions["competition_gender"] == "male"]["competition_id"].tolist()[:5]
-        rows = []
-        for competition_id in competition_ids:
-            try:
-                matches = sb.matches(competition_id=competition_id, season_id=281)
-                if matches.empty:
-                    continue
-                for _, match in matches.head(3).iterrows():
-                    rows.append({"Competition": competition_id, "MatchID": match.get("match_id")})
-            except Exception:
-                continue
-        if rows:
-            return pd.DataFrame(rows)
-    except Exception:
-        pass
 
     return pd.DataFrame(columns=["Player", "Team", "Position", "MinutesPlayed", "Goals", "Assists", "xG", "xA", "ProgressiveCarries", "SuccessfulDribbles", "KeyPasses", "WingerScoutingScore"])
 
@@ -415,23 +396,6 @@ def build_position_distribution(df: pd.DataFrame) -> px.pie:
 
 def main() -> None:
     """Render the Streamlit dashboard."""
-    st.markdown(
-        """
-        <div style="background: linear-gradient(135deg, #020617 0%, #0f172a 45%, #2563eb 100%); padding: 1.9rem 2rem; border-radius: 1.1rem; margin-bottom: 1.2rem; border: 1px solid rgba(148,163,184,0.28); box-shadow: 0 14px 34px rgba(15,23,42,0.2);">
-            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap: 1rem;">
-                <div>
-                    <h1 style="color:#f8fafc; margin:0 0 0.25rem 0; font-size: 2rem;">Football Scouting Platform</h1>
-                    <p style="color:#bfdbfe; margin:0; font-size:1.05rem; font-weight:600;">Analyze • Compare • Recruit</p>
-                </div>
-                <div style="background: rgba(15,23,42,0.42); padding:0.8rem 1rem; border-radius:0.8rem; border: 1px solid rgba(148,163,184,0.22); max-width: 34rem;">
-                    <p style="color:#e2e8f0; margin:0; font-size:0.95rem;">A premium scouting workspace for profiling elite talents, benchmarking play styles, and preparing recruitment-ready recommendations.</p>
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
     st.markdown(
         """
         <style>
