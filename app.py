@@ -5,12 +5,21 @@ comparison views, and analytical charts for recruiter-friendly storytelling.
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+
+def get_score_badge(score: float) -> tuple[str, str]:
+    """Return a badge label and accent color based on the scouting score."""
+    if score >= 85:
+        return "Elite", "#22c55e"
+    if score >= 70:
+        return "Strong", "#38bdf8"
+    return "Monitor", "#f59e0b"
 
 
 def render_metric_card(label: str, value: Union[str, int, float], icon: str = "⚽", subtitle: str = "") -> None:
@@ -19,11 +28,11 @@ def render_metric_card(label: str, value: Union[str, int, float], icon: str = "�
         f"""
         <div class="scouting-card metric-card">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:0.6rem; margin-bottom:0.45rem;">
-                <div style="font-size:0.95rem; color:#475569; font-weight:600;">{label}</div>
+                <div style="font-size:0.95rem; color:#cbd5e1; font-weight:600;">{label}</div>
                 <div style="font-size:1.1rem;">{icon}</div>
             </div>
-            <div style="font-size:1.5rem; font-weight:700; color:#0f172a; margin-bottom:0.2rem;">{value}</div>
-            <div style="font-size:0.8rem; color:#64748b;">{subtitle}</div>
+            <div style="font-size:1.5rem; font-weight:700; color:#f8fafc; margin-bottom:0.2rem;">{value}</div>
+            <div style="font-size:0.8rem; color:#94a3b8;">{subtitle}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -35,8 +44,8 @@ def render_info_card(title: str, body: str, accent: str = "#2563eb") -> None:
     st.markdown(
         f"""
         <div class="scouting-card" style="border-left:4px solid {accent};">
-            <h4 style="margin:0 0 0.35rem 0; color:#0f172a;">{title}</h4>
-            <div style="color:#475569; line-height:1.5;">{body}</div>
+            <h4 style="margin:0 0 0.35rem 0; color:#f8fafc;">{title}</h4>
+            <div style="color:#cbd5e1; line-height:1.5;">{body}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -279,6 +288,32 @@ def build_winger_scoring(df: pd.DataFrame) -> pd.DataFrame:
     return scored_df
 
 
+def apply_dark_chart_style(fig: Any) -> Any:
+    """Apply a consistent dark theme to Plotly charts for the premium scouting interface."""
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#020617",
+        plot_bgcolor="#0f172a",
+        font=dict(color="#f8fafc", family="Inter, Arial, sans-serif"),
+        title=dict(font=dict(size=18, color="#f8fafc")),
+        margin=dict(l=25, r=20, t=55, b=20),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(size=12, color="#cbd5e1")),
+    )
+    fig.update_xaxes(
+        title_font=dict(size=13, color="#cbd5e1"),
+        tickfont=dict(size=12, color="#94a3b8"),
+        gridcolor="#1e293b",
+        zerolinecolor="#334155",
+    )
+    fig.update_yaxes(
+        title_font=dict(size=13, color="#cbd5e1"),
+        tickfont=dict(size=12, color="#94a3b8"),
+        gridcolor="#1e293b",
+        zerolinecolor="#334155",
+    )
+    return fig
+
+
 def build_similarity_search(df: pd.DataFrame, player_name: str) -> list[dict]:
     """Return the five most similar players based on scouting metrics."""
     scored_df = build_winger_scoring(df)
@@ -310,7 +345,7 @@ def build_similarity_search(df: pd.DataFrame, player_name: str) -> list[dict]:
 
 def build_overview_chart(df: pd.DataFrame) -> px.scatter:
     """Create a scatter chart for goals versus assists by player."""
-    return px.scatter(
+    fig = px.scatter(
         df,
         x="Goals",
         y="Assists",
@@ -325,8 +360,9 @@ def build_overview_chart(df: pd.DataFrame) -> px.scatter:
             "MinutesPlayed": True,
         },
         title="Goals vs Assists",
-        template="plotly_white",
+        template="plotly_dark",
     )
+    return apply_dark_chart_style(fig)
 
 
 def build_player_comparison_charts(df: pd.DataFrame, players: list[str]) -> list[go.Figure]:
@@ -363,35 +399,39 @@ def build_player_comparison_charts(df: pd.DataFrame, players: list[str]) -> list
         size="MinutesPlayed",
         hover_name="Player",
         title="Percentile Comparison: Goals vs Assists",
-        template="plotly_white",
+        template="plotly_dark",
     )
+    radar_fig = apply_dark_chart_style(radar_fig)
+    scatter_fig = apply_dark_chart_style(scatter_fig)
     return [radar_fig, scatter_fig]
 
 
 def build_top_players_chart(df: pd.DataFrame) -> px.bar:
     """Create a bar chart showing the top scoring players."""
     top_df = df.sort_values("Goals", ascending=False).head(10)
-    return px.bar(
+    fig = px.bar(
         top_df,
         x="Player",
         y="Goals",
         color="Team",
         title="Top Goal Scorers",
-        template="plotly_white",
+        template="plotly_dark",
     )
+    return apply_dark_chart_style(fig)
 
 
 def build_position_distribution(df: pd.DataFrame) -> px.pie:
     """Create a pie chart for position distribution."""
     counts = df["Position"].value_counts().reset_index()
     counts.columns = ["Position", "Count"]
-    return px.pie(
+    fig = px.pie(
         counts,
         values="Count",
         names="Position",
         title="Position Distribution",
-        template="plotly_white",
+        template="plotly_dark",
     )
+    return apply_dark_chart_style(fig)
 
 
 def main() -> None:
@@ -402,17 +442,17 @@ def main() -> None:
         .block-container {padding-top: 1rem; padding-bottom: 2rem; max-width: 1450px;}
         div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.9rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
         .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.95rem;}
-        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1;}
+        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.5rem 0.9rem; background: #0f172a; color: #cbd5e1; border: 1px solid #334155;}
         .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
-        section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);}
-        .scouting-card {background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; border-radius: 1.1rem; padding: 1rem 1.1rem; box-shadow: 0 10px 28px rgba(15,23,42,0.06); margin-bottom: 0.95rem;}
+        section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #020617 0%, #0f172a 100%); border-right: 1px solid #1e293b;}
+        .scouting-card {background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1f2937; border-radius: 1.05rem; padding: 1rem 1.1rem; box-shadow: 0 10px 30px rgba(2,6,23,0.35); margin-bottom: 0.95rem;}
         .metric-card {min-height: 7.2rem;}
-        .dashboard-hero {background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #2563eb 100%); border-radius: 1.2rem; padding: 1.25rem 1.35rem; border: 1px solid rgba(148,163,184,0.22); box-shadow: 0 16px 36px rgba(15,23,42,0.16); margin-bottom: 0.9rem;}
-        .dashboard-card {background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.95rem 1rem; box-shadow: 0 8px 24px rgba(15,23,42,0.05); height: 100%;}
-        .report-card {background: linear-gradient(135deg, #fcfdff 0%, #f8fafc 100%); border: 1px solid #dbeafe; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);}
-        .section-kicker {font-size: 0.74rem; color: #2563eb; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; margin-bottom: 0.2rem;}
-        .section-title {font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;}
-        .section-copy {color: #64748b; font-size: 0.94rem; margin-bottom: 0.8rem;}
+        .dashboard-hero {background: linear-gradient(135deg, #020617 0%, #111827 45%, #1d4ed8 100%); border-radius: 1.2rem; padding: 1.25rem 1.35rem; border: 1px solid rgba(96,165,250,0.24); box-shadow: 0 16px 36px rgba(2,6,23,0.28); margin-bottom: 0.9rem;}
+        .dashboard-card {background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1f2937; border-radius: 1rem; padding: 0.95rem 1rem; box-shadow: 0 8px 24px rgba(2,6,23,0.28); height: 100%;}
+        .report-card {background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1e293b; border-radius: 1rem; padding: 1rem 1.1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);}
+        .section-kicker {font-size: 0.74rem; color: #60a5fa; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; margin-bottom: 0.2rem;}
+        .section-title {font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.25rem;}
+        .section-copy {color: #94a3b8; font-size: 0.94rem; margin-bottom: 0.8rem;}
         .score-ring {width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); color: white; font-size: 1.35rem; font-weight: 700; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.24);}
         @media (max-width: 1100px) {
             .block-container {padding-left: 0.9rem; padding-right: 0.9rem;}
@@ -425,10 +465,12 @@ def main() -> None:
     df = load_data()
 
     with st.sidebar:
-        st.markdown("### Scouting Filters")
-        st.caption("Refine the player pool for comparison and recruitment analysis")
+        st.markdown("<div style='padding:0.1rem 0 0.4rem 0;'><div style='font-size:1.2rem; font-weight:700; color:#f8fafc;'>Scouting Filters</div><div style='color:#94a3b8; font-size:0.9rem; margin-top:0.2rem;'>Refine the player pool for comparison and recruitment analysis</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:0.8px; background:linear-gradient(90deg, rgba(96,165,250,0.2), rgba(96,165,250,0.75)); margin:0.4rem 0 0.8rem 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:0.8rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#60a5fa; margin-bottom:0.35rem;'>Profile filters</div>", unsafe_allow_html=True)
         position = st.selectbox("Position", ["All", "Forward", "Midfielder", "Defender"])
         team = st.selectbox("Team", ["All", *sorted(df["Team"].unique())])
+        st.markdown("<div style='font-size:0.8rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#60a5fa; margin:0.7rem 0 0.35rem 0;'>Output thresholds</div>", unsafe_allow_html=True)
         min_minutes = st.slider("Minimum Minutes Played", 0, 3500, 0, step=100)
         min_goals = st.slider("Minimum Goals", 0, 30, 0, step=1)
 
@@ -484,7 +526,33 @@ def main() -> None:
             st.markdown("<div class='dashboard-card'>", unsafe_allow_html=True)
             st.markdown("<div class='section-kicker'>Top prospects</div><div class='section-title'>Highest winger scores</div><div class='section-copy'>A compact view of the strongest profiles in the current pool.</div>", unsafe_allow_html=True)
             top_players = filtered_df[["Player", "Team", "Position", "WingerScoutingScore", "Goals", "Assists"]].sort_values("WingerScoutingScore", ascending=False).head(8).reset_index(drop=True)
-            st.dataframe(top_players, use_container_width=True, hide_index=True, height=280)
+            for idx, row in top_players.iterrows():
+                badge_label, badge_color = get_score_badge(float(row["WingerScoutingScore"]))
+                st.markdown(
+                    f"""
+                    <div class="scouting-card" style="padding:0.8rem 0.9rem; margin-bottom:0.6rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.7rem; flex-wrap:wrap;">
+                            <div>
+                                <div style="font-size:0.8rem; color:#60a5fa; font-weight:700;">#{idx + 1}</div>
+                                <div style="font-size:1rem; font-weight:700; color:#f8fafc;">{row['Player']}</div>
+                                <div style="color:#94a3b8; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+                                <div style="background:{badge_color}; color:white; border-radius:999px; padding:0.3rem 0.65rem; font-size:0.78rem; font-weight:700;">{badge_label}</div>
+                                <div style="text-align:right; min-width:4.7rem;">
+                                    <div style="font-size:0.82rem; color:#94a3b8;">Score</div>
+                                    <div style="font-size:1rem; font-weight:700; color:#f8fafc;">{row['WingerScoutingScore']}</div>
+                                </div>
+                                <div style="text-align:right; min-width:3.9rem;">
+                                    <div style="font-size:0.82rem; color:#94a3b8;">Goals</div>
+                                    <div style="font-size:1rem; font-weight:700; color:#f8fafc;">{row['Goals']}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
             st.markdown("</div>", unsafe_allow_html=True)
 
         with top_row_right:
@@ -630,7 +698,7 @@ def main() -> None:
                 "xAPer90",
             ]]
             st.markdown("<div class='section-title'>Comparison table</div>", unsafe_allow_html=True)
-            st.dataframe(compare_df, use_container_width=True, height=260)
+            st.dataframe(compare_df.style.background_gradient(cmap='Blues', subset=['WingerScoutingScore']).format({'WingerScoutingScore': '{:.1f}'}), use_container_width=True, height=260)
 
         comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
         comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
@@ -667,12 +735,12 @@ def main() -> None:
             top_match = similarity_df.iloc[0]
             st.markdown(
                 f"""
-                <div class="scouting-card" style="border-left:5px solid #1d4ed8; background:linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);">
+                <div class="scouting-card" style="border-left:5px solid #1d4ed8; background:linear-gradient(135deg, #172554 0%, #0f172a 100%);">
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
                         <div>
-                            <div style="font-size:0.8rem; color:#2563eb; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Top Match</div>
-                            <h3 style="margin:0.2rem 0; color:#0f172a;">{top_match['Player']}</h3>
-                            <div style="color:#475569;">{top_match['Team']} • {top_match['Position']}</div>
+                            <div style="font-size:0.8rem; color:#60a5fa; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Top Match</div>
+                            <h3 style="margin:0.2rem 0; color:#f8fafc;">{top_match['Player']}</h3>
+                            <div style="color:#cbd5e1;">{top_match['Team']} • {top_match['Position']}</div>
                         </div>
                         <div style="background:#1d4ed8; color:white; border-radius:0.9rem; padding:0.75rem 0.95rem; text-align:center; min-width:7rem;">
                             <div style="font-size:0.8rem; opacity:0.9;">Similarity</div>
@@ -692,12 +760,12 @@ def main() -> None:
                         <div class="scouting-card">
                             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.45rem;">
                                 <div>
-                                    <strong style="color:#0f172a;">{row['Player']}</strong>
-                                    <div style="color:#64748b; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
+                                    <strong style="color:#f8fafc;">{row['Player']}</strong>
+                                    <div style="color:#94a3b8; font-size:0.9rem;">{row['Team']} • {row['Position']}</div>
                                 </div>
-                                <div style="font-weight:700; color:#1d4ed8;">{row['SimilarityPercent']}%</div>
+                                <div style="font-weight:700; color:#60a5fa;">{row['SimilarityPercent']}%</div>
                             </div>
-                            <div style="height:0.5rem; background:#e2e8f0; border-radius:999px; overflow:hidden;">
+                            <div style="height:0.5rem; background:#1f2937; border-radius:999px; overflow:hidden;">
                                 <div style="height:100%; width:{row['SimilarityPercent']}%; background:linear-gradient(90deg, #2563eb 0%, #38bdf8 100%); border-radius:999px;"></div>
                             </div>
                         </div>

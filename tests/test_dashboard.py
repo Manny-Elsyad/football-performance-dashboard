@@ -16,6 +16,7 @@ from app import (
     build_winger_scoring,
     calculate_percentiles,
     filter_players,
+    get_score_badge,
     get_tab_labels,
     load_data,
 )
@@ -130,6 +131,12 @@ def test_get_tab_labels_returns_expected_tabs():
         "Similarity Search",
         "Scouting Reports",
     ]
+
+
+def test_get_score_badge_returns_expected_labels():
+    assert get_score_badge(92) == ("Elite", "#22c55e")
+    assert get_score_badge(74) == ("Strong", "#38bdf8")
+    assert get_score_badge(48) == ("Monitor", "#f59e0b")
 
 
 def test_build_player_profile_returns_expected_keys():
