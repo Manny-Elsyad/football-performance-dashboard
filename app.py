@@ -698,7 +698,7 @@ def main() -> None:
                 "xAPer90",
             ]]
             st.markdown("<div class='section-title'>Comparison table</div>", unsafe_allow_html=True)
-            st.dataframe(compare_df.style.background_gradient(cmap='Blues', subset=['WingerScoutingScore']).format({'WingerScoutingScore': '{:.1f}'}), use_container_width=True, height=260)
+            st.dataframe(compare_df, use_container_width=True, height=260)
 
         comparison_two = st.selectbox("Compare player A", options=sorted(filtered_df["Player"].tolist()), index=0)
         comparison_two_b = st.selectbox("Compare player B", options=sorted(filtered_df["Player"].tolist()), index=min(1, len(filtered_df) - 1))
