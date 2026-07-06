@@ -441,9 +441,10 @@ def main() -> None:
         <style>
         .block-container {padding-top: 0.55rem; padding-bottom: 1.4rem; max-width: 1480px;}
         div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.95rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
-        .stTabs [data-baseweb="tab-list"] {gap: 0.45rem; margin-bottom: 0.8rem;}
-        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.45rem 0.8rem; background: #0f172a; color: #cbd5e1; border: 1px solid #334155;}
-        .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: white; border-color: #1d4ed8;}
+        .stTabs [data-baseweb="tab-list"] {gap: 0.5rem; margin-bottom: 0.9rem; padding: 0.2rem; border-radius: 999px; background: rgba(15, 23, 42, 0.85); border: 1px solid #1e293b;}
+        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.6rem 0.95rem; background: transparent; color: #e2e8f0; border: 1px solid transparent; font-weight: 600; letter-spacing: 0.01em; min-height: 2.35rem;}
+        .stTabs [data-baseweb="tab"]:hover {background: rgba(30, 41, 59, 0.9); color: #f8fafc; border-color: #334155;}
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: #ffffff; border-color: #3b82f6; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24); font-weight: 700;}
         section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #020617 0%, #0f172a 100%); border-right: 1px solid #1e293b;}
         .scouting-card {background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1f2937; border-radius: 0.95rem; padding: 0.85rem 0.95rem; box-shadow: 0 10px 26px rgba(2,6,23,0.3); margin-bottom: 0.7rem;}
         .metric-card {min-height: 6.35rem; padding: 0.8rem 0.9rem;}
