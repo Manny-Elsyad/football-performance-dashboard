@@ -48,6 +48,12 @@ def test_load_data_returns_expected_columns():
     assert not df.empty
 
 
+def test_load_data_supports_real_dataset():
+    df = load_data("Real Dataset")
+    assert not df.empty
+    assert {"Player", "Team", "Position", "MinutesPlayed", "Goals", "Assists"}.issubset(set(df.columns))
+
+
 def test_filter_players_applies_filters():
     df = load_data()
     filtered = filter_players(

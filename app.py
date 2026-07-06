@@ -96,6 +96,7 @@ Comparable Profiles
 st.set_page_config(page_title="Football Scouting Platform", page_icon="⚽", layout="wide")
 
 DATA_PATH = Path(__file__).parent / "data" / "players.csv"
+REAL_DATA_PATH = Path(__file__).parent / "data" / "real_players.csv"
 
 
 def get_tab_labels() -> list[str]:
@@ -109,10 +110,20 @@ def get_navigation_options() -> list[str]:
 
 
 @st.cache_data
-def load_data() -> pd.DataFrame:
-    """Load and preprocess the bundled football player dataset."""
-    if DATA_PATH.exists():
-        df = pd.read_csv(DATA_PATH)
+def load_data(dataset_source: str = "Sample Dataset") -> pd.DataFrame:
+    """Load and preprocess the football player dataset.
+    
+    Args:
+        dataset_source: Either "Sample Dataset" or "Real Dataset"
+    """
+    # Choose the data path based on the source
+    if dataset_source == "Real Dataset":
+        path = REAL_DATA_PATH
+    else:
+        path = DATA_PATH
+    
+    if path.exists():
+        df = pd.read_csv(path)
         if not df.empty:
             return df.sort_values(["Team", "Player"]).reset_index(drop=True)
 
@@ -477,6 +488,19 @@ def main() -> None:
     df = load_data()
 
     with st.sidebar:
+        st.markdown("<div class='sidebar-section'><div class='sidebar-title'>Data Source</div><div class='sidebar-subtitle'>Choose between sample and real football data.</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:0.8px; background:linear-gradient(90deg, rgba(96,165,250,0.2), rgba(96,165,250,0.75)); margin:0.35rem 0 0.6rem 0;'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='sidebar-label'>Dataset selection</div>", unsafe_allow_html=True)
+        dataset_choice = st.radio("Choose dataset", options=["Sample Dataset", "Real Dataset"], index=0, key="dataset_selector")
+        
+        # Reload data if dataset changed
+        if dataset_choice != st.session_state.get("current_dataset", "Sample Dataset"):
+            st.session_state["current_dataset"] = dataset_choice
+            st.cache_data.clear()
+            df = load_data(dataset_choice)
+        else:
+            df = load_data(dataset_choice)
+        
         st.markdown("<div class='sidebar-section'><div class='sidebar-title'>Recruitment Filters</div><div class='sidebar-subtitle'>Refine the active scouting pool for comparison and shortlist building.</div></div>", unsafe_allow_html=True)
         st.markdown("<div style='height:0.8px; background:linear-gradient(90deg, rgba(96,165,250,0.2), rgba(96,165,250,0.75)); margin:0.35rem 0 0.6rem 0;'></div>", unsafe_allow_html=True)
         st.markdown("<div class='sidebar-label'>Profile filters</div>", unsafe_allow_html=True)

@@ -1,0 +1,151 @@
+Player,Team,League,Position,Age,Matches,Goals,Assists,xG,xA,ProgressiveCarries,SuccessfulDribbles,KeyPasses,PassesCompleted,PassingAccuracy,Tackles,Interceptions,DistanceCoveredKm,MinutesPlayed,Nationality
+Erling Haaland,Brighton,Bundesliga,Midfielder,32,16,0,6,0.0,4.9,69.34,0.83,0.97,714,77.6,2,1,175.1,1495,Austria
+Kylian Mbappé,Roma,Bundesliga,Forward,34,16,9,2,9.83,1.74,48.52,1.99,0.88,559,81.4,2,1,173.3,1482,Austria
+Vinicius Junior,Aston Villa,La Liga,Forward,31,27,7,5,7.04,4.66,72.37,1.45,0.62,705,87.7,5,1,284.1,2441,Spain
+Vinícius Júnior,Manchester United,Ligue 1,Midfielder,29,6,0,2,0.0,1.65,30.82,0.46,0.45,280,86.4,1,1,70.7,601,Spain
+Mohamed Salah,Stade Nantes,Bundesliga,Forward,30,17,7,5,7.13,5.16,45.09,0.62,0.89,421,83.1,4,0,184.8,1580,Netherlands
+Harry Kane,Olympique Marseille,Serie A,Midfielder,18,34,9,7,7.89,5.68,113.61,2.22,0.53,1156,85.9,7,4,357.0,3060,France
+Gianluigi Donnarumma,AS Monaco,Ligue 1,Midfielder,21,17,4,8,4.26,7.9,72.52,0.92,0.29,773,81.5,1,2,184.5,1583,Poland
+Pedri,SSC Napoli,Premier League,Forward,30,18,4,4,3.7,3.47,66.47,0.71,0.77,710,80.8,1,0,196.9,1682,Netherlands
+Jude Bellingham,SSC Napoli,Premier League,Midfielder,29,22,3,15,2.45,13.25,50.53,-0.51,2.13,452,89.2,7,3,237.4,2036,Japan
+Florian Wirtz,Borussia Dortmund,Ligue 1,Forward,19,38,10,5,10.51,4.48,99.15,3.16,0.93,952,82.4,2,4,400.4,3429,Portugal
+Phil Foden,SC Freiburg,Bundesliga,Forward,18,22,12,5,12.03,5.1,78.65,1.73,2.05,848,86.1,0,2,240.8,2063,Argentina
+Bukayo Saka,Aston Villa,Premier League,Midfielder,33,8,1,3,0.99,2.48,27.27,0.96,0.04,240,83.7,2,0,93.1,803,France
+Cristiano Ronaldo,Liverpool,Serie A,Midfielder,26,6,0,1,0.0,0.91,21.5,0.23,0.36,168,84.1,0,0,65.8,560,Germany
+Lamine Yamal,Inter Milan,Serie A,Midfielder,18,36,4,6,4.07,5.31,81.24,2.75,2.6,813,81.8,3,4,387.1,3326,Sweden
+Alejandro Garnacho,Arsenal,Bundesliga,Forward,18,5,1,0,1.05,0.0,15.26,0.62,0.32,193,83.2,1,0,61.0,527,France
+Ousmane Dembélé,Roma,La Liga,Midfielder,20,14,3,3,2.4,2.97,63.85,1.51,0.88,572,83.0,2,0,153.2,1320,Spain
+Sergej Milinković-Savić,Liverpool,Serie A,Forward,34,12,3,3,2.51,2.87,47.24,0.65,0.23,480,88.1,0,1,125.5,1081,Germany
+Declan Rice,AC Milan,La Liga,Midfielder,26,15,0,2,0.0,1.71,52.09,1.99,0.29,502,80.3,4,0,164.1,1412,Sweden
+Enzo Fernandez,Chelsea,Premier League,Midfielder,31,16,1,4,1.09,3.41,53.34,0.35,0.85,580,81.9,0,0,174.8,1492,Sweden
+Eduardo Camavinga,Liverpool,Bundesliga,Midfielder,18,19,4,9,4.33,9.75,66.21,2.21,0.73,757,89.7,6,2,204.0,1748,Argentina
+Eduardo Moreno,Arsenal,Premier League,Forward,25,16,6,2,4.93,1.79,45.42,1.66,1.52,472,78.9,2,1,170.7,1466,Belgium
+Ricardo Pereira,West Ham,Ligue 1,Forward,20,16,8,1,8.26,0.9,44.32,0.47,0.52,405,75.9,3,2,176.4,1522,England
+Theo Hernández,SC Freiburg,Premier League,Defender,30,38,2,3,2.17,2.92,142.52,2.14,2.36,1318,87.6,6,6,407.6,3490,Austria
+Marc Guéhi,Borussia Dortmund,Ligue 1,Defender,24,23,1,1,1.07,0.84,57.53,0.34,1.43,553,75.2,2,0,242.7,2076,Japan
+Malang Sarr,Juventus,Serie A,Midfielder,29,29,6,9,5.0,8.53,83.33,2.85,2.17,929,89.2,5,3,304.4,2614,Portugal
+Myles Lewis-Skelly,Stade Nantes,Bundesliga,Forward,18,17,7,3,7.69,2.47,35.24,1.29,0.71,376,86.9,1,0,180.4,1540,Portugal
+Pau Torres,AS Monaco,Premier League,Midfielder,29,35,4,9,3.33,8.11,78.67,1.42,2.05,813,71.4,5,6,371.8,3183,Belgium
+Sergio Gómez,Juventus,Ligue 1,Midfielder,31,8,0,1,0.0,1.06,26.45,0.22,0.45,280,91.2,2,0,92.8,789,France
+Grégory Sertic,Inter Milan,Serie A,Forward,30,22,9,8,9.22,8.59,97.91,0.66,1.13,948,79.7,3,2,237.5,2033,England
+Thomas Delaney,Liverpool,Bundesliga,Midfielder,19,28,0,8,0.0,8.72,122.58,4.53,2.61,1254,86.5,2,4,299.5,2565,Portugal
+Jamal Murray,Brighton,Bundesliga,Midfielder,23,28,5,18,4.14,18.32,124.77,3.57,0.47,1244,89.5,0,2,297.1,2545,Spain
+Kasper Dolberg,Paris Saint-Germain,La Liga,Midfielder,28,25,3,1,2.93,0.92,84.09,2.18,1.9,896,92.2,2,4,268.9,2306,Austria
+Glenn Murray,RB Leipzig,Ligue 1,Midfielder,22,11,1,3,0.96,2.88,28.51,1.54,0.61,345,79.2,0,1,117.0,1003,Spain
+John McGinn,Manchester City,Premier League,Midfielder,32,11,1,4,1.03,3.84,28.46,0.37,0.63,242,82.3,2,0,121.1,1038,South Korea
+Emile Smith Rowe,AC Milan,Serie A,Midfielder,32,22,2,8,1.79,6.91,64.73,-0.25,0.99,707,78.5,2,4,240.4,2054,Netherlands
+Leandro Trossard,Real Sociedad,Premier League,Forward,27,34,14,11,13.6,9.98,111.28,2.06,1.65,1088,75.5,0,4,357.1,3060,Netherlands
+Pascal Groß,Real Sociedad,Premier League,Defender,23,33,1,4,0.97,3.54,107.19,2.53,3.36,1040,77.5,7,4,352.5,3021,France
+Kaoru Mitoma,Manchester United,Ligue 1,Midfielder,20,14,0,3,0.0,3.29,43.29,1.11,0.75,462,80.1,0,2,152.0,1301,England
+Alexis Mac Allister,Borussia Dortmund,Ligue 1,Defender,29,8,0,0,0.0,0.0,25.38,0.7,0.54,219,84.7,0,0,85.9,733,Spain
+Moisés Caicedo,Stade Nantes,Ligue 1,Midfielder,35,25,3,2,2.82,1.78,115.59,0.27,0.54,1056,77.0,0,1,264.0,2263,Argentina
+Lukas Nmecha,Brentford,Serie A,Midfielder,23,33,0,17,0.0,17.65,67.61,1.68,2.18,672,86.8,1,1,353.8,3026,Portugal
+Dominic Solanke,Inter Milan,La Liga,Forward,23,13,5,4,4.22,3.48,48.45,1.88,0.99,418,79.8,3,0,141.3,1214,Poland
+Brennan Johnson,AS Monaco,La Liga,Defender,28,29,1,6,0.98,4.83,92.43,2.51,1.78,888,82.5,1,3,311.9,2665,Sweden
+Richarlison,Olympique Marseille,Serie A,Midfielder,31,35,9,8,9.86,8.41,144.53,3.65,0.91,1469,81.4,2,0,377.1,3226,Argentina
+Trent Alexander-Arnold,Paris Saint-Germain,Premier League,Midfielder,26,10,2,3,2.15,2.82,26.58,0.91,0.14,227,82.8,2,0,113.2,974,France
+Ismails Abar,RB Leipzig,Ligue 1,Forward,24,16,4,7,4.23,6.72,58.07,1.17,0.91,452,73.9,2,1,175.7,1507,England
+Nelson Semedo,SSC Napoli,Ligue 1,Forward,30,7,3,2,2.66,2.03,33.56,0.86,-0.02,281,68.7,0,0,79.2,685,Poland
+João Palhinha,Sevilla,La Liga,Forward,18,5,1,1,1.0,0.81,17.25,0.23,0.62,211,78.1,0,0,52.0,454,Brazil
+Kyle Walker,Bayer Leverkusen,Premier League,Forward,32,28,10,6,10.42,6.53,113.18,2.51,1.29,1101,76.6,4,0,297.1,2543,Argentina
+Rúben Dias,Real Sociedad,Ligue 1,Forward,28,38,12,13,10.57,12.83,93.16,4.34,1.7,963,73.2,6,3,404.3,3470,Belgium
+Erling Haaland 1,Inter Milan,Premier League,Midfielder,34,10,3,4,2.63,3.37,29.49,0.8,0.72,306,76.8,2,1,108.0,920,Japan
+Kylian Mbappé 1,Aston Villa,La Liga,Forward,22,38,14,6,11.25,5.05,172.96,1.32,2.8,1684,84.6,0,8,401.8,3445,Netherlands
+Vinicius Junior 1,Borussia Dortmund,La Liga,Midfielder,31,38,5,12,4.1,12.61,111.08,3.4,0.26,1155,88.7,12,2,404.5,3467,Spain
+Vinícius Júnior 1,Manchester City,La Liga,Forward,32,24,9,5,9.78,4.23,65.44,1.83,1.41,672,83.2,2,4,252.2,2162,Germany
+Mohamed Salah 1,West Ham,Premier League,Midfielder,20,18,4,5,4.35,5.19,79.57,1.94,1.05,807,75.4,3,2,193.4,1652,Spain
+Harry Kane 1,Tottenham,Premier League,Midfielder,29,9,2,4,1.71,3.88,27.83,0.59,0.83,256,83.0,1,0,104.0,888,South Korea
+Gianluigi Donnarumma 1,West Ham,Premier League,Defender,20,29,2,2,1.92,1.86,120.7,3.5,1.74,1229,81.1,6,0,307.6,2635,Sweden
+Pedri 1,SSC Napoli,La Liga,Midfielder,27,31,6,14,4.93,11.24,111.85,-0.7,2.51,1144,81.1,5,0,332.9,2861,Spain
+Jude Bellingham 1,Chelsea,Premier League,Defender,34,17,1,1,1.01,0.98,54.76,0.5,1.26,608,72.3,2,0,183.7,1565,France
+Florian Wirtz 1,Stade Nantes,Bundesliga,Forward,25,19,5,4,4.35,3.41,56.68,0.87,0.78,539,94.3,2,1,201.6,1733,Germany
+Phil Foden 1,RB Leipzig,La Liga,Defender,34,4,0,0,0.0,0.0,8.11,0.27,0.03,125,70.8,0,0,47.0,402,Argentina
+Bukayo Saka 1,Liverpool,Bundesliga,Defender,25,17,0,0,0.0,0.0,42.82,1.86,1.03,426,82.0,3,2,187.6,1599,Austria
+Cristiano Ronaldo 1,Atletico Madrid,Ligue 1,Forward,23,30,15,8,15.9,8.1,89.55,2.3,1.54,927,83.6,4,3,324.4,2783,Argentina
+Lamine Yamal 1,Brighton,La Liga,Forward,19,10,4,2,3.54,1.97,34.54,0.8,0.53,395,82.0,1,1,115.1,988,Japan
+Alejandro Garnacho 1,Juventus,Bundesliga,Defender,22,7,0,0,0.0,0.0,31.88,0.32,0.4,270,85.8,2,0,78.1,677,Poland
+Ousmane Dembélé 1,Roma,Serie A,Forward,23,28,15,4,12.0,3.39,52.75,1.71,2.01,589,85.7,6,3,295.4,2526,South Korea
+Sergej Milinković-Savić 1,Inter Milan,Serie A,Forward,29,15,5,4,4.96,3.68,64.97,1.69,0.45,678,72.8,0,1,162.1,1388,Argentina
+Declan Rice 1,RB Leipzig,Bundesliga,Midfielder,25,31,6,10,5.75,8.05,105.25,2.72,0.84,990,76.1,4,3,335.3,2877,Sweden
+Enzo Fernandez 1,Manchester United,Premier League,Defender,33,37,1,2,0.88,2.08,111.47,3.0,1.97,1134,91.8,8,5,397.1,3403,Netherlands
+Eduardo Camavinga 1,Bayer Leverkusen,Premier League,Forward,29,23,9,5,7.77,4.52,58.42,1.6,1.09,628,80.1,2,1,244.1,2095,Netherlands
+Eduardo Moreno 1,Liverpool,La Liga,Defender,35,38,1,2,1.09,1.67,102.42,0.47,2.95,955,90.5,9,4,401.3,3441,South Korea
+Ricardo Pereira 1,Real Madrid,Bundesliga,Forward,23,4,3,1,2.87,1.02,17.25,0.58,0.21,140,78.6,1,0,49.6,421,Belgium
+Theo Hernández 1,Sevilla,Bundesliga,Midfielder,25,30,4,19,3.87,19.3,115.51,1.14,1.64,1255,84.5,0,2,320.9,2756,Poland
+Marc Guéhi 1,Brighton,Bundesliga,Forward,22,35,10,2,10.18,1.89,80.68,2.94,1.06,741,92.0,0,2,369.7,3179,Germany
+Malang Sarr 1,Paris Saint-Germain,Premier League,Midfielder,25,35,10,18,9.12,17.17,91.16,3.09,1.56,853,81.9,7,0,373.8,3199,Germany
+Myles Lewis-Skelly 1,Tottenham,Premier League,Midfielder,19,18,0,6,0.0,5.51,69.22,1.06,-0.05,770,81.5,2,1,193.4,1652,France
+Pau Torres 1,SC Freiburg,Serie A,Forward,18,10,2,0,1.96,0.0,33.05,0.87,0.96,335,88.1,1,1,113.6,975,Netherlands
+Sergio Gómez 1,Liverpool,Premier League,Midfielder,18,16,1,7,0.89,6.67,48.99,2.04,1.74,534,81.6,1,1,170.3,1458,Brazil
+Grégory Sertic 1,Stade Rennais,Serie A,Midfielder,29,28,1,12,1.0,13.09,60.12,2.79,0.61,577,78.4,3,2,303.2,2598,Portugal
+Thomas Delaney 1,Borussia Dortmund,Bundesliga,Midfielder,25,13,2,5,2.16,5.24,43.24,1.05,1.09,471,85.8,1,1,142.2,1213,Netherlands
+Jamal Murray 1,Aston Villa,Serie A,Forward,19,9,3,2,3.21,2.13,40.29,0.71,0.26,416,88.4,0,0,103.7,893,Poland
+Kasper Dolberg 1,Stade Nantes,Premier League,Forward,34,26,14,6,11.91,5.96,43.85,1.13,1.46,551,80.8,6,1,275.7,2363,France
+Glenn Murray 1,AC Milan,Premier League,Forward,22,7,3,3,2.95,3.09,24.4,0.9,0.44,195,86.3,1,0,81.4,703,Spain
+John McGinn 1,Manchester United,Ligue 1,Midfielder,19,25,7,10,7.01,10.79,52.46,1.89,0.89,566,93.7,7,1,270.2,2316,Japan
+Emile Smith Rowe 1,Barcelona,La Liga,Midfielder,24,30,2,13,2.15,12.06,132.42,2.21,1.3,1256,83.1,4,3,321.9,2759,South Korea
+Leandro Trossard 1,Aston Villa,La Liga,Forward,32,15,5,5,5.35,4.53,42.15,0.53,1.01,368,80.5,3,1,161.7,1383,Belgium
+Pascal Groß 1,West Ham,Premier League,Midfielder,22,22,4,9,3.46,7.46,73.4,1.93,0.48,771,76.7,4,0,231.8,1984,South Korea
+Kaoru Mitoma 1,RB Leipzig,Serie A,Midfielder,24,32,0,12,0.0,10.59,110.55,0.66,0.32,1065,79.3,8,0,338.4,2906,Netherlands
+Alexis Mac Allister 1,Brighton,Bundesliga,Midfielder,34,15,1,6,0.96,6.38,59.36,0.28,0.74,557,76.5,1,0,157.1,1355,Sweden
+Moisés Caicedo 1,Olympique Marseille,Bundesliga,Midfielder,21,25,1,13,0.85,12.0,99.12,1.25,0.85,1108,85.5,5,1,264.7,2268,Italy
+Lukas Nmecha 1,Olympique Marseille,La Liga,Forward,33,21,4,3,3.63,2.48,96.54,0.59,-0.09,940,72.8,3,4,224.3,1923,Sweden
+Dominic Solanke 1,Olympique Marseille,Bundesliga,Midfielder,27,10,2,3,1.83,3.19,38.04,0.95,0.43,352,81.5,1,0,111.8,960,Sweden
+Brennan Johnson 1,Liverpool,Serie A,Midfielder,31,26,6,11,5.04,11.64,62.81,2.08,1.36,613,76.9,4,3,280.1,2401,Germany
+Richarlison 1,Manchester United,Premier League,Forward,30,38,8,8,7.15,7.61,146.73,1.97,0.36,1431,84.4,9,5,405.3,3483,Sweden
+Trent Alexander-Arnold 1,Liverpool,La Liga,Forward,19,12,4,2,4.38,1.74,23.8,1.23,1.15,266,78.2,0,1,126.7,1089,Japan
+Ismails Abar 1,Roma,Bundesliga,Forward,23,21,5,4,4.29,3.64,89.61,2.01,0.81,869,86.9,0,1,222.8,1908,Brazil
+Nelson Semedo 1,Brighton,Ligue 1,Forward,30,26,6,5,5.79,4.68,102.01,2.51,0.55,1043,78.6,4,3,280.9,2409,Italy
+João Palhinha 1,West Ham,Ligue 1,Forward,26,8,4,1,4.32,0.88,34.49,0.4,0.65,237,80.1,1,1,93.2,792,England
+Kyle Walker 1,Juventus,Ligue 1,Midfielder,22,32,2,11,1.62,11.26,70.79,1.04,0.58,643,78.0,6,4,337.6,2896,Sweden
+Rúben Dias 1,Chelsea,Ligue 1,Defender,25,21,0,2,0.0,2.07,51.99,2.66,0.99,591,77.8,2,3,230.5,1973,Belgium
+Erling Haaland 2,Aston Villa,Premier League,Midfielder,35,28,3,6,2.5,5.67,106.26,1.57,0.9,1009,84.7,1,0,303.9,2596,Belgium
+Kylian Mbappé 2,Olympique Marseille,Bundesliga,Defender,29,12,0,0,0.0,0.0,45.09,0.46,1.05,409,87.7,1,1,127.0,1085,France
+Vinicius Junior 2,Barcelona,Serie A,Defender,28,33,4,3,3.33,3.02,132.03,3.71,1.81,1291,79.4,5,5,347.9,2981,Netherlands
+Vinícius Júnior 2,Olympique Marseille,Serie A,Midfielder,24,18,6,5,5.63,4.01,40.5,1.51,0.59,378,84.4,1,1,199.2,1704,Sweden
+Mohamed Salah 2,Stade Nantes,La Liga,Midfielder,31,23,2,5,2.07,4.83,99.28,2.33,1.81,981,83.2,5,2,251.2,2154,Brazil
+Harry Kane 2,Bayer Leverkusen,Ligue 1,Midfielder,21,20,4,10,3.46,8.41,58.51,0.81,1.71,501,85.1,1,1,210.0,1804,South Korea
+Gianluigi Donnarumma 2,Manchester United,Ligue 1,Defender,20,8,0,0,0.0,0.0,30.53,0.87,0.13,302,80.5,1,0,86.0,735,Argentina
+Pedri 2,Bayer Leverkusen,Ligue 1,Forward,34,32,9,7,8.82,7.14,93.06,3.43,2.16,976,81.4,1,0,341.6,2928,Brazil
+Jude Bellingham 2,Real Sociedad,Bundesliga,Midfielder,24,11,0,4,0.0,3.6,43.88,1.42,0.82,355,85.6,0,0,116.1,1001,Netherlands
+Florian Wirtz 2,Paris Saint-Germain,La Liga,Midfielder,21,22,0,8,0.0,7.45,96.68,1.24,1.66,990,80.1,2,1,236.2,2025,Portugal
+Phil Foden 2,Stade Rennais,Bundesliga,Midfielder,24,26,3,10,2.64,10.28,79.97,1.95,1.3,764,79.6,3,1,276.0,2374,France
+Bukayo Saka 2,RB Leipzig,Premier League,Midfielder,24,34,7,15,6.75,12.58,112.19,1.66,2.59,1200,77.5,0,3,359.4,3086,Portugal
+Cristiano Ronaldo 2,Bayer Leverkusen,Serie A,Forward,29,32,8,4,8.44,3.87,104.18,2.45,2.98,1156,87.1,0,3,337.3,2892,Netherlands
+Lamine Yamal 2,Chelsea,La Liga,Defender,33,36,3,0,2.99,0.0,155.59,2.76,2.04,1571,77.0,4,3,384.4,3289,Netherlands
+Alejandro Garnacho 2,Brighton,Ligue 1,Forward,21,14,2,3,2.13,3.19,39.18,1.42,0.74,470,80.5,1,3,149.8,1283,Japan
+Ousmane Dembélé 2,Stade Nantes,Serie A,Midfielder,28,35,2,3,2.08,2.92,145.45,0.62,-0.72,1402,83.0,8,1,368.3,3156,France
+Sergej Milinković-Savić 2,Bayern Munich,Serie A,Midfielder,20,22,3,4,2.94,3.24,65.2,1.37,0.51,614,83.5,1,2,239.1,2049,Austria
+Declan Rice 2,Sevilla,Premier League,Midfielder,30,18,2,4,2.01,3.31,45.9,1.48,1.11,430,83.8,1,1,196.2,1683,Spain
+Enzo Fernandez 2,SC Freiburg,La Liga,Defender,29,20,1,2,0.89,1.75,87.76,1.76,0.63,828,79.5,1,1,211.8,1818,Netherlands
+Eduardo Camavinga 2,AC Milan,Serie A,Forward,33,30,2,6,2.19,5.94,115.35,2.36,0.88,1178,88.1,5,3,317.1,2720,Portugal
+Eduardo Moreno 2,Real Sociedad,Ligue 1,Midfielder,31,26,4,11,4.15,10.99,101.13,0.3,0.42,994,86.3,2,0,282.1,2419,Germany
+Ricardo Pereira 2,Sevilla,Serie A,Forward,34,9,2,2,1.77,2.12,38.92,0.78,0.5,347,83.0,1,1,96.5,823,Netherlands
+Theo Hernández 2,Stade Nantes,Bundesliga,Midfielder,32,8,0,2,0.0,1.76,23.18,0.85,0.09,247,81.9,0,0,93.5,797,Germany
+Marc Guéhi 2,Aston Villa,Ligue 1,Defender,34,30,3,2,2.46,2.1,74.91,1.94,1.21,663,87.8,4,2,316.9,2715,Japan
+Malang Sarr 2,Olympique Marseille,Bundesliga,Defender,32,25,0,1,0.0,1.08,67.41,1.79,0.27,637,90.2,2,1,269.0,2296,South Korea
+Myles Lewis-Skelly 2,Liverpool,La Liga,Midfielder,26,16,1,8,0.8,6.5,40.8,-0.12,1.11,419,80.9,0,0,175.8,1510,England
+Pau Torres 2,Atletico Madrid,Ligue 1,Defender,34,14,0,0,0.0,0.0,40.3,0.56,0.69,412,83.9,0,1,149.4,1280,Japan
+Sergio Gómez 2,Aston Villa,Ligue 1,Midfielder,31,14,0,4,0.0,3.71,46.62,1.38,1.11,449,78.7,0,1,151.9,1306,France
+Grégory Sertic 2,Juventus,La Liga,Midfielder,25,13,1,6,1.0,6.24,30.57,1.71,0.57,321,77.6,2,1,147.4,1258,Netherlands
+Thomas Delaney 2,Liverpool,Serie A,Midfielder,30,14,3,6,2.95,6.37,63.36,1.38,1.29,567,83.2,2,1,153.7,1309,Belgium
+Jamal Murray 2,Real Madrid,Premier League,Midfielder,32,19,2,4,1.81,4.08,83.76,1.12,1.65,870,81.2,2,1,207.8,1780,Belgium
+Kasper Dolberg 2,Barcelona,La Liga,Midfielder,20,36,8,11,8.54,8.84,160.61,2.02,3.36,1610,83.2,15,4,383.8,3294,Sweden
+Glenn Murray 2,Chelsea,Premier League,Forward,32,24,9,5,8.92,4.51,67.68,0.22,2.17,736,87.6,7,1,257.8,2210,Germany
+John McGinn 2,Stade Rennais,Serie A,Midfielder,28,17,0,2,0.0,1.69,72.9,1.0,1.28,701,74.7,1,2,184.3,1578,Poland
+Emile Smith Rowe 2,Borussia Dortmund,Ligue 1,Midfielder,32,21,7,2,5.95,1.75,86.99,0.84,0.8,897,73.0,2,1,223.4,1923,Japan
+Leandro Trossard 2,Juventus,Ligue 1,Midfielder,30,36,7,0,7.69,0.0,104.63,1.64,3.7,993,80.6,4,3,386.5,3313,South Korea
+Pascal Groß 2,Chelsea,Bundesliga,Defender,19,24,2,2,1.68,2.07,64.17,1.57,0.56,598,78.7,3,2,262.0,2245,Austria
+Kaoru Mitoma 2,AC Milan,Bundesliga,Defender,28,18,1,3,1.08,2.73,71.47,1.01,1.19,655,76.2,4,2,191.1,1639,England
+Alexis Mac Allister 2,Brentford,Serie A,Defender,20,36,5,3,5.39,2.42,154.34,1.45,2.37,1496,87.6,1,1,382.8,3284,Austria
+Moisés Caicedo 2,Stade Rennais,Premier League,Defender,32,4,0,0,0.0,0.0,18.8,0.44,0.4,148,80.2,0,0,49.3,418,France
+Lukas Nmecha 2,Brentford,Premier League,Midfielder,31,9,2,4,1.95,4.04,31.94,0.46,0.43,289,82.2,2,0,94.8,813,Japan
+Dominic Solanke 2,Liverpool,La Liga,Midfielder,32,32,4,10,3.55,8.46,136.51,2.96,0.41,1379,87.1,4,3,344.8,2955,South Korea
+Brennan Johnson 2,Paris Saint-Germain,Serie A,Midfielder,34,38,4,19,4.19,18.36,155.31,3.8,2.68,1514,76.5,6,5,407.1,3494,Brazil
+Richarlison 2,AS Monaco,La Liga,Forward,31,13,5,3,4.41,2.76,61.0,0.93,0.63,610,86.1,2,1,145.3,1249,Spain
+Trent Alexander-Arnold 2,Roma,Bundesliga,Midfielder,18,5,0,2,0.0,2.14,13.05,0.44,0.4,190,72.6,1,0,62.8,536,Austria
+Ismails Abar 2,Real Sociedad,Ligue 1,Midfielder,28,16,3,6,2.67,4.99,64.28,0.55,1.36,643,83.0,1,0,177.8,1524,Poland
+Nelson Semedo 2,Sevilla,Serie A,Forward,26,20,6,7,6.28,7.39,71.37,2.04,1.86,730,86.7,4,2,219.1,1878,Sweden
+João Palhinha 2,Brentford,Bundesliga,Midfielder,20,30,2,6,2.03,5.16,75.81,2.65,1.86,708,90.2,8,3,323.2,2773,Sweden
+Kyle Walker 2,Atletico Madrid,Ligue 1,Defender,19,36,0,5,0.0,4.4,107.75,0.24,1.66,1105,89.1,3,2,386.9,3315,Portugal
+Rúben Dias 2,West Ham,Serie A,Defender,26,20,1,2,0.96,1.81,64.32,1.42,1.2,635,78.3,3,1,215.9,1844,Spain
