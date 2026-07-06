@@ -441,10 +441,13 @@ def main() -> None:
         <style>
         .block-container {padding-top: 0.55rem; padding-bottom: 1.4rem; max-width: 1480px;}
         div[data-testid="stMetric"] {background: linear-gradient(135deg, #0f172a 0%, #111827 100%); border: 1px solid #334155; border-radius: 0.95rem; padding: 0.8rem 0.9rem; box-shadow: 0 6px 20px rgba(15,23,42,0.16);}
-        .stTabs [data-baseweb="tab-list"] {gap: 0.5rem; margin-bottom: 0.9rem; padding: 0.2rem; border-radius: 999px; background: rgba(15, 23, 42, 0.85); border: 1px solid #1e293b;}
-        .stTabs [data-baseweb="tab"] {border-radius: 999px; padding: 0.6rem 0.95rem; background: transparent; color: #e2e8f0; border: 1px solid transparent; font-weight: 600; letter-spacing: 0.01em; min-height: 2.35rem;}
-        .stTabs [data-baseweb="tab"]:hover {background: rgba(30, 41, 59, 0.9); color: #f8fafc; border-color: #334155;}
-        .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: #ffffff; border-color: #3b82f6; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24); font-weight: 700;}
+        .stTabs [data-baseweb="tab-list"] {overflow: visible !important; position: relative !important; z-index: 10 !important; display: flex !important; flex-wrap: wrap !important; gap: 0.5rem; margin-bottom: 0.9rem; padding: 0.2rem; border-radius: 999px; background: rgba(15, 23, 42, 0.95); border: 1px solid #1e293b;}
+        .stTabs [data-baseweb="tab"] {overflow: visible !important; opacity: 1 !important; visibility: visible !important; color: #f8fafc !important; background: transparent; border-radius: 999px; padding: 0.6rem 0.95rem; font-weight: 600; min-height: 2.35rem;}
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: #ffffff !important; border-color: #3b82f6; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24); font-weight: 700;}
+        div[data-testid="stRadio"] > div[role="radiogroup"] {display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.25rem; margin-bottom: 0.9rem; border-radius: 999px; background: rgba(15, 23, 42, 0.95); border: 1px solid #1e293b; position: relative; z-index: 10; overflow: visible;}
+        div[data-testid="stRadio"] label {color: #e2e8f0 !important; opacity: 1 !important; visibility: visible !important; padding: 0.55rem 0.9rem; border-radius: 999px; border: 1px solid transparent; font-weight: 600;}
+        div[data-testid="stRadio"] label:hover {background: rgba(30, 41, 59, 0.95); color: #f8fafc !important; border-color: #334155;}
+        div[data-testid="stRadio"] label[data-checked="true"] {background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color: #ffffff !important; border-color: #3b82f6; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24); font-weight: 700;}
         section[data-testid="stSidebar"] > div {background: linear-gradient(180deg, #020617 0%, #0f172a 100%); border-right: 1px solid #1e293b;}
         .scouting-card {background: linear-gradient(135deg, #111827 0%, #0f172a 100%); border: 1px solid #1f2937; border-radius: 0.95rem; padding: 0.85rem 0.95rem; box-shadow: 0 10px 26px rgba(2,6,23,0.3); margin-bottom: 0.7rem;}
         .metric-card {min-height: 6.35rem; padding: 0.8rem 0.9rem;}
@@ -499,11 +502,20 @@ def main() -> None:
 
     kpis = build_kpi_summary(filtered_df)
 
-    dashboard_tab, profile_tab, compare_tab, similarity_tab, reports_tab = st.tabs(
-        ["📊 Dashboard", "🧠 Player Profile", "⚖️ Compare Players", "🔎 Similarity Search", "📝 Scouting Reports"]
+    nav_labels = get_tab_labels()
+    if "active_nav_tab" not in st.session_state:
+        st.session_state.active_nav_tab = nav_labels[0]
+
+    active_tab = st.radio(
+        "Navigation",
+        options=nav_labels,
+        index=nav_labels.index(st.session_state.active_nav_tab),
+        horizontal=True,
+        label_visibility="collapsed",
+        key="active_nav_tab",
     )
 
-    with dashboard_tab:
+    if active_tab == "Dashboard":
         st.markdown(
             """
             <div class="dashboard-hero">
@@ -581,7 +593,7 @@ def main() -> None:
             st.plotly_chart(build_position_distribution(filtered_df), use_container_width=True, height=270)
             st.markdown("</div>", unsafe_allow_html=True)
 
-    with profile_tab:
+    elif active_tab == "Player Profile":
         st.subheader("Player Profile")
         st.caption("The flagship page for a detailed scouting view of the selected player.")
         profile_player = st.selectbox("Open a scouting profile", options=sorted(filtered_df["Player"].tolist()), index=0)
@@ -675,7 +687,7 @@ def main() -> None:
                 unsafe_allow_html=True,
             )
 
-    with compare_tab:
+    elif active_tab == "Compare Players":
         st.subheader("Player Comparison")
         st.caption("Compare players side by side using radar, scatter, and comparative table views.")
         st.markdown(
@@ -728,7 +740,7 @@ def main() -> None:
             with scatter_col:
                 st.plotly_chart(scatter_fig, use_container_width=True, height=380)
 
-    with similarity_tab:
+    elif active_tab == "Similarity Search":
         st.subheader("Similarity Search")
         st.caption("Find the closest tactical and output-based matches for a selected scouting profile.")
         similarity_player = st.selectbox("Find similar players to", options=sorted(filtered_df["Player"].tolist()), index=0)
@@ -804,7 +816,7 @@ def main() -> None:
                 height=320,
             )
 
-    with reports_tab:
+    elif active_tab == "Scouting Reports":
         st.subheader("Scouting Reports")
         st.caption("Generate a polished scouting brief for the selected player and download it as a report.")
         report_player = st.selectbox("Select a player for a written report", options=sorted(filtered_df["Player"].tolist()), index=0)
