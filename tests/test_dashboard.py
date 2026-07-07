@@ -12,6 +12,7 @@ from src.analytics import (
     build_winger_scoring,
     calculate_percentiles,
 )
+from src.clubs import get_best_club, get_club_recommendations, list_clubs
 from src.data import DATA_PATH, filter_players, load_data
 from src.reports import build_scouting_report
 from src.similarity import build_similarity_search
@@ -132,6 +133,7 @@ def test_get_tab_labels_returns_expected_tabs():
         "Player Profile",
         "Compare Players",
         "Similarity Search",
+        "Club Fit Engine",
         "Scouting Reports",
     ]
 
@@ -173,3 +175,57 @@ def test_build_scouting_report_returns_bytes():
     report = build_scouting_report(profile, similarity)
     assert isinstance(report, bytes)
     assert b"Scouting Report" in report
+
+
+def test_list_clubs_returns_expected_clubs():
+    clubs = list_clubs()
+    assert len(clubs) == 10
+    expected_clubs = {
+        "Manchester City",
+        "Arsenal",
+        "Liverpool",
+        "Brighton",
+        "Barcelona",
+        "Real Madrid",
+        "Bayer Leverkusen",
+        "Bayern Munich",
+        "Inter Milan",
+        "Paris Saint-Germain",
+    }
+    assert set(clubs) == expected_clubs
+
+
+def test_get_club_recommendations_returns_five_clubs():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    recommendations = get_club_recommendations(profile, df)
+    assert len(recommendations) == 5
+    assert all("club" in rec for rec in recommendations)
+    assert all("fit_score" in rec for rec in recommendations)
+    assert all("confidence" in rec for rec in recommendations)
+
+
+def test_get_club_recommendations_fit_scores_valid_range():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    recommendations = get_club_recommendations(profile, df)
+    assert all(0 <= rec["fit_score"] <= 100 for rec in recommendations)
+    assert all(recommendations[i]["fit_score"] >= recommendations[i + 1]["fit_score"] for i in range(len(recommendations) - 1))
+
+
+def test_get_best_club_returns_top_recommendation():
+    df = load_data()
+    profile = build_player_profile(df, "Lamine Yamal")
+    best = get_best_club(profile, df)
+    assert "club" in best
+    assert "fit_score" in best
+    assert best["fit_score"] >= 0
+    assert best["fit_score"] <= 100
+
+
+def test_club_fit_works_with_real_dataset():
+    df = load_data("Real Dataset")
+    profile = build_player_profile(df, df["Player"].iloc[0])
+    recommendations = get_club_recommendations(profile, df)
+    assert len(recommendations) == 5
+    assert all(rec["fit_score"] >= 0 for rec in recommendations)

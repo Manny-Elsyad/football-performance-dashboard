@@ -46,9 +46,9 @@ def render_info_card(title: str, body: str, accent: str = "#2563eb") -> None:
 
 def get_tab_labels() -> list[str]:
     """Return the internal tab labels used for the scouting platform navigation."""
-    return ["Dashboard", "Player Profile", "Compare Players", "Similarity Search", "Scouting Reports"]
+    return ["Dashboard", "Player Profile", "Compare Players", "Similarity Search", "Club Fit Engine", "Scouting Reports"]
 
 
 def get_navigation_options() -> list[str]:
     """Return the visible radio-button labels for the app navigation."""
-    return ["🏠 Dashboard", "👤 Player Profile", "📊 Compare Players", "🔍 Similarity Search", "📄 Scouting Reports"]
+    return ["🏠 Dashboard", "👤 Player Profile", "📊 Compare Players", "🔍 Similarity Search", "🏟️ Club Fit Engine", "📄 Scouting Reports"]

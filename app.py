@@ -9,6 +9,7 @@ import plotly.express as px
 import streamlit as st
 
 from src.analytics import build_kpi_summary, build_player_profile, build_winger_scoring
+from src.clubs import get_best_club, get_club_recommendations
 from src.data import filter_players, load_data
 from src.reports import build_scouting_report
 from src.similarity import build_similarity_search
@@ -421,6 +422,104 @@ def main() -> None:
                 use_container_width=True,
                 height=320,
             )
+
+    elif active_tab == "🏟️ Club Fit Engine":
+        st.subheader("Club Fit Engine")
+        st.caption("Find the best clubs that match the selected player's statistical profile and playing style.")
+        
+        fit_player = st.selectbox("Select player for club fit analysis", options=sorted(filtered_df["Player"].tolist()), index=0)
+        
+        if st.button("Analyze Club Fit", key="analyze_fit_btn"):
+            st.session_state["club_fit_analysis"] = True
+        
+        if st.session_state.get("club_fit_analysis") and fit_player:
+            # Build player profile with advanced metrics
+            player_profile = build_player_profile(filtered_df, fit_player)
+            
+            # Get club recommendations
+            recommendations = get_club_recommendations(player_profile, filtered_df)
+            best_club_fit = get_best_club(player_profile, filtered_df)
+            
+            if best_club_fit:
+                # Display best club card
+                st.markdown(
+                    f"""
+                    <div class="scouting-card" style="border-left:5px solid #dc2626; background:linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); padding:0.95rem 1rem; margin-bottom:1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;">
+                            <div>
+                                <div style="font-size:0.8rem; color:#fca5a5; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">⭐ Best Match</div>
+                                <h3 style="margin:0.2rem 0; color:#f8fafc; font-size:1.2rem;">{best_club_fit['club']}</h3>
+                                <div style="color:#fecaca; font-size:0.92rem; margin-top:0.3rem;">{best_club_fit['explanation']}</div>
+                            </div>
+                            <div style="background:#dc2626; color:white; border-radius:0.9rem; padding:0.75rem 1rem; text-align:center; min-width:7rem;">
+                                <div style="font-size:0.77rem; opacity:0.9;">Club Fit Score</div>
+                                <div style="font-size:1.4rem; font-weight:700;">{best_club_fit['fit_score']}/100</div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                
+                # Display top 5 recommendations with horizontal bars
+                st.markdown("<div class='section-title'>Top 5 Club Matches</div>", unsafe_allow_html=True)
+                
+                for idx, recommendation in enumerate(recommendations, 1):
+                    col1, col2, col3 = st.columns([2, 3, 1])
+                    
+                    with col1:
+                        st.markdown(
+                            f"""
+                            <div style="padding:0.5rem 0;">
+                                <div style="font-weight:700; color:#f8fafc; font-size:0.95rem;">#{idx} {recommendation['club']}</div>
+                                <div style="color:#94a3b8; font-size:0.85rem; margin-top:0.2rem; line-height:1.3;">{recommendation['explanation']}</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    
+                    with col2:
+                        # Horizontal progress bar
+                        fit_score = recommendation['fit_score']
+                        bar_color = "#10b981" if fit_score >= 80 else "#f59e0b" if fit_score >= 65 else "#ef4444"
+                        st.markdown(
+                            f"""
+                            <div style="margin-top:0.5rem;">
+                                <div style="background:#1e293b; height:32px; border-radius:0.5rem; overflow:hidden; position:relative;">
+                                    <div style="background:{bar_color}; height:100%; width:{fit_score}%; display:flex; align-items:center; justify-content:flex-end; padding-right:0.5rem;">
+                                        <span style="color:white; font-weight:700; font-size:0.9rem;">{fit_score}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    
+                    with col3:
+                        confidence_color = "#10b981" if recommendation['confidence'] >= 75 else "#f59e0b" if recommendation['confidence'] >= 60 else "#ef4444"
+                        st.markdown(
+                            f"""
+                            <div style="text-align:center; padding-top:0.5rem;">
+                                <div style="color:{confidence_color}; font-weight:700; font-size:0.85rem;">Confidence</div>
+                                <div style="color:{confidence_color}; font-weight:700; font-size:1rem;">{recommendation['confidence']:.0f}%</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    
+                    # Display weaknesses if any
+                    if recommendation['weaknesses']:
+                        st.markdown(
+                            f"""
+                            <div style="background:#1e293b; border-left:3px solid #f59e0b; padding:0.6rem 0.8rem; border-radius:0.3rem; margin:0.6rem 0; font-size:0.85rem; color:#e2e8f0;">
+                                <strong style="color:#fbbf24;">Potential Weaknesses:</strong><br/>
+                                {f'<br/>'.join([f'• {w}' for w in recommendation['weaknesses']])}
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    
+                    st.divider()
 
     elif active_tab == "📄 Scouting Reports":
         st.subheader("Scouting Reports")
