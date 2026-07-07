@@ -5,21 +5,18 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app import (
-    DATA_PATH,
+from src.analytics import (
     build_advanced_metrics,
     build_kpi_summary,
-    build_player_comparison_charts,
     build_player_profile,
-    build_similarity_search,
-    build_scouting_report,
     build_winger_scoring,
     calculate_percentiles,
-    filter_players,
-    get_score_badge,
-    get_tab_labels,
-    load_data,
 )
+from src.data import DATA_PATH, filter_players, load_data
+from src.reports import build_scouting_report
+from src.similarity import build_similarity_search
+from src.ui import get_score_badge, get_tab_labels
+from src.visualizations import build_player_comparison_charts
 
 
 def test_data_file_exists():
